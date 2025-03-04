@@ -62,7 +62,7 @@ export default function GlassNavbar() {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <button className="px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500/80 to-rose-500/80 text-white text-sm font-medium hover:shadow-lg hover:shadow-indigo-500/20 transition-all duration-300">
+            <button className="px-4 py-2 rounded-full bg-[#c4ff00] text-black text-sm font-medium hover:shadow-lg hover:shadow-indigo-500/20 transition-all duration-300">
               Get Started
             </button>
           </div>
@@ -120,7 +120,7 @@ export default function GlassNavbar() {
                 transition={{ duration: 0.3, delay: 0.6 }}
                 className="mt-6"
               >
-                <button className="px-6 py-3 rounded-full bg-gradient-to-r from-indigo-500/80 to-rose-500/80 text-white font-medium hover:shadow-lg hover:shadow-indigo-500/20 transition-all duration-300">
+                <button className="px-6 py-3 rounded-full bg-[#c4ff00] text-black font-medium hover:shadow-lg hover:shadow-indigo-500/20 transition-all duration-300">
                   Get Started
                 </button>
               </motion.div>

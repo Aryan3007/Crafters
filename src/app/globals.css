@@ -136,19 +136,23 @@
 
 /* Track (the background) */
 ::-webkit-scrollbar-track {
-  background: #f0f0f0;
+  background: #000000;
   border-radius: 10px;
 }
 
 /* Handle (the draggable part) */
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #4a90e2, #a2d2ff);
+  background: linear-gradient(135deg, #363636, #202020);
   cursor: pointer;
+  border-radius: 10px;
+
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #1455e2, #0f3cd7);
+  background: linear-gradient(135deg, #363636, #202020);
+  border-radius: 10px;
+
 }
 
 body{
