@@ -15,7 +15,7 @@ type ProjectType = {
 
 const projects: ProjectType[] = [
   {
-    url: "/placeholder.svg?height=800&width=1200",
+    url: "/project1.jpg",
     title: "E-Commerce Platform",
     description:
       "A fully responsive e-commerce platform with advanced filtering, cart functionality, and secure payment processing.",
@@ -24,7 +24,7 @@ const projects: ProjectType[] = [
     id: 1,
   },
   {
-    url: "/placeholder.svg?height=800&width=1200",
+    url: "/project2.jpg",
     title: "Finance Dashboard",
     description:
       "Interactive dashboard for financial analytics with real-time data visualization and customizable reports.",
@@ -93,9 +93,9 @@ const ProjectCard = ({ project }: { project: ProjectType }) => {
         }}
         className="absolute inset-0 z-0 transition-transform duration-500 group-hover:scale-105"
       ></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent z-10"></div>
       <div className="absolute bottom-0 left-0 right-0 z-20 p-8">
-        <div className="mb-2 flex items-center gap-2">
+        <div className="mb-2 flex-wrap flex items-center gap-2">
           <div className="bg-[#c4ff00] text-black text-xs font-bold px-3 py-1 rounded-full">{project.category}</div>
           {project.tech.map((tech, index) => (
             <div key={index} className="bg-[#333] text-white text-xs px-3 py-1 rounded-full">
@@ -105,7 +105,7 @@ const ProjectCard = ({ project }: { project: ProjectType }) => {
         </div>
         <h3 className="text-3xl font-bold text-white mb-2">{project.title}</h3>
         <p className="text-gray-300 mb-4 max-w-xl">{project.description}</p>
-        <div className="flex gap-3">
+        <div className="flex lg:flex-row flex-col gap-3">
           <button className="bg-[#c4ff00] hover:bg-[#d8ff4d] text-black font-medium px-5 py-2 rounded-lg transition-colors">
             View Project
           </button>
