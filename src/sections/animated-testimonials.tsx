@@ -52,7 +52,7 @@ export const AnimatedTestimonials = ({
   }, [autoplay, handleNext])
   return (
     <div className="max-w-sm md:max-w-6xl mx-auto antialiased font-sans px-4 md:px-8 lg:px-12 py-20">
-      <div className="relative grid grid-cols-1 md:grid-cols-2  gap-20">
+      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-20">
         <div>
           <div className="relative h-80 w-full">
             <AnimatePresence>
@@ -145,7 +145,7 @@ export const AnimatedTestimonials = ({
               ))}
             </motion.p>
           </motion.div>
-          <div className="flex gap-4 pt-12 md:pt-0">
+          <div className="flex gap-4 pt-4 md:pt-0">
             <button
               onClick={handlePrev}
               className="h-7 w-7 rounded-full bg-[#c4ff00] flex items-center justify-center group/button"

@@ -37,7 +37,7 @@ export default function GlassNavbar() {
         transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
         className={cn(
           "fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4 transition-all duration-300",
-          scrolled ? "bg-black/30 backdrop-blur-[10px] border-b border-white/[0.08] shadow-lg" : "bg-transparent",
+          scrolled ? "bg-black/30 backdrop-blur-[10px] shadow-lg" : "bg-transparent",
         )}
       >
         <div className="container mx-auto flex items-center justify-between">

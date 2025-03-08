@@ -1,8 +1,11 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { CheckCircle, Loader2 } from 'lucide-react'
+import { CheckCircle, Loader2 } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type FormStatus = "idle" | "submitting" | "success" | "error"
 
@@ -14,39 +17,32 @@ export default function ContactForm() {
     email: "",
     companyName: "",
     phoneNumber: "",
-    
+
     // Project Info
     projectType: "",
     budget: "",
     timeline: "",
     projectDescription: "",
-    
+
     // How did they find us
-    referralSource: ""
+    referralSource: "",
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormStatus("submitting");
+    e.preventDefault()
+    setFormStatus("submitting")
 
+    // Simulate API call
     try {
-      const response = await fetch("/api/contact/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        setFormStatus("success");
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+      setFormStatus("success")
+      // Reset form after success
+      setTimeout(() => {
         setFormData({
           fullName: "",
           email: "",
@@ -57,25 +53,20 @@ export default function ContactForm() {
           timeline: "",
           projectDescription: "",
           referralSource: "",
-        });
-      } else {
-        setFormStatus("error");
-        alert("Error: " + result.error);
-      }
-    } catch (error) {
-      setFormStatus("error");
-      if (error instanceof Error) {
-        alert("Error: " + error.message);
-      } else {
-        alert("An unknown error occurred.");
-      }
+        })
+        setFormStatus("idle")
+      }, 3000)
+    } catch {
+      setFormStatus("error")
+      setTimeout(() => setFormStatus("idle"), 3000)
     }
-  };
+  }
 
-  const inputClasses = "w-full bg-gradient-to-r from-black/80 via-black/40  to-black/80 bg-[#1e1e1e] border border-gray-800 rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c4ff00]/50 focus:border-transparent transition-all duration-200"
-  
+  const inputClasses =
+    "w-full bg-[#1e1e1e] border border-gray-800 rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c4ff00]/50 focus:border-transparent transition-all duration-200"
+
   const labelClasses = "block text-sm font-medium text-gray-400 mb-1"
-  
+
   const fadeInUpVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: (i: number) => ({
@@ -91,7 +82,7 @@ export default function ContactForm() {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-16 md:py-24">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -115,9 +106,12 @@ export default function ContactForm() {
           </div>
           <span className="text-sm font-medium text-white">Get in Touch</span>
         </div>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white">Let&apos;s Create Something <span className="text-[#c4ff00]">Amazing</span></h2>
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white">
+          Let&apos;s Create Something <span className="text-[#c4ff00]">Amazing</span>
+        </h2>
         <p className="text-gray-400 max-w-2xl mx-auto">
-          Tell us about your project and business needs. Our team of creative experts will help bring your vision to life.
+          Tell us about your project and business needs. Our team of creative experts will help bring your vision to
+          life.
         </p>
       </motion.div>
 
@@ -125,7 +119,9 @@ export default function ContactForm() {
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <motion.div custom={0} variants={fadeInUpVariants} initial="hidden" animate="visible">
-              <label htmlFor="fullName" className={labelClasses}>Full Name *</label>
+              <label htmlFor="fullName" className={labelClasses}>
+                Full Name *
+              </label>
               <input
                 type="text"
                 id="fullName"
@@ -139,7 +135,9 @@ export default function ContactForm() {
             </motion.div>
 
             <motion.div custom={1} variants={fadeInUpVariants} initial="hidden" animate="visible">
-              <label htmlFor="email" className={labelClasses}>Email Address *</label>
+              <label htmlFor="email" className={labelClasses}>
+                Email Address *
+              </label>
               <input
                 type="email"
                 id="email"
@@ -153,7 +151,9 @@ export default function ContactForm() {
             </motion.div>
 
             <motion.div custom={2} variants={fadeInUpVariants} initial="hidden" animate="visible">
-              <label htmlFor="companyName" className={labelClasses}>Company Name</label>
+              <label htmlFor="companyName" className={labelClasses}>
+                Company Name
+              </label>
               <input
                 type="text"
                 id="companyName"
@@ -166,7 +166,9 @@ export default function ContactForm() {
             </motion.div>
 
             <motion.div custom={3} variants={fadeInUpVariants} initial="hidden" animate="visible">
-              <label htmlFor="phoneNumber" className={labelClasses}>Phone Number</label>
+              <label htmlFor="phoneNumber" className={labelClasses}>
+                Phone Number
+              </label>
               <input
                 type="tel"
                 id="phoneNumber"
@@ -179,75 +181,83 @@ export default function ContactForm() {
             </motion.div>
           </div>
 
-          <motion.div 
-            custom={4} 
-            variants={fadeInUpVariants} 
-            initial="hidden" 
-            animate="visible"
-            className="mb-8"
-          >
+          <motion.div custom={4} variants={fadeInUpVariants} initial="hidden" animate="visible" className="mb-8">
             <h3 className="text-xl font-semibold text-white mb-4 border-b border-gray-800 pb-2">Project Details</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div>
-                <label htmlFor="projectType" className={labelClasses}>Project Type *</label>
-                <select
-                  id="projectType"
+                <label htmlFor="projectType" className={labelClasses}>
+                  Project Type *
+                </label>
+                <Select
                   name="projectType"
                   value={formData.projectType}
-                  onChange={handleChange}
+                  onValueChange={(value) => setFormData((prev) => ({ ...prev, projectType: value }))}
                   required
-                  className={inputClasses}
                 >
-                  <option value="" disabled>Select project type</option>
-                  <option value="website">Website Design</option>
-                  <option value="app">Mobile App</option>
-                  <option value="branding">Branding</option>
-                  <option value="ecommerce">E-Commerce</option>
-                  <option value="marketing">Digital Marketing</option>
-                  <option value="other">Other</option>
-                </select>
+                  <SelectTrigger className={inputClasses}>
+                    <SelectValue placeholder="Select project type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1e1e1e] border border-gray-800 text-white">
+                    <SelectItem value="website">Website Design</SelectItem>
+                    <SelectItem value="app">Mobile App</SelectItem>
+                    <SelectItem value="branding">Branding</SelectItem>
+                    <SelectItem value="ecommerce">E-Commerce</SelectItem>
+                    <SelectItem value="marketing">Digital Marketing</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
-                <label htmlFor="budget" className={labelClasses}>Budget Range</label>
-                <select
-                  id="budget"
+                <label htmlFor="budget" className={labelClasses}>
+                  Budget Range
+                </label>
+                <Select
                   name="budget"
                   value={formData.budget}
-                  onChange={handleChange}
-                  className={inputClasses}
+                  onValueChange={(value) => setFormData((prev) => ({ ...prev, budget: value }))}
                 >
-                  <option value="" disabled>Select budget range</option>
-                  <option value="less-5k">Less than $5,000</option>
-                  <option value="5k-10k">$5,000 - $10,000</option>
-                  <option value="10k-25k">$10,000 - $25,000</option>
-                  <option value="25k-50k">$25,000 - $50,000</option>
-                  <option value="50k+">$50,000+</option>
-                </select>
+                  <SelectTrigger className={inputClasses}>
+                    <SelectValue placeholder="Select budget range" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1e1e1e] border border-gray-800 text-white">
+                    <SelectItem value="less-5k">Less than $5,000</SelectItem>
+                    <SelectItem value="5k-10k">$5,000 - $10,000</SelectItem>
+                    <SelectItem value="10k-25k">$10,000 - $25,000</SelectItem>
+                    <SelectItem value="25k-50k">$25,000 - $50,000</SelectItem>
+                    <SelectItem value="50k+">$50,000+</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
-                <label htmlFor="timeline" className={labelClasses}>Timeline</label>
-                <select
-                  id="timeline"
+                <label htmlFor="timeline" className={labelClasses}>
+                  Timeline
+                </label>
+                <Select
                   name="timeline"
                   value={formData.timeline}
-                  onChange={handleChange}
-                  className={inputClasses}
+                  onValueChange={(value) => setFormData((prev) => ({ ...prev, timeline: value }))}
                 >
-                  <option value="" disabled>Select timeline</option>
-                  <option value="asap">ASAP</option>
-                  <option value="1-month">Within 1 month</option>
-                  <option value="1-3-months">1-3 months</option>
-                  <option value="3-6-months">3-6 months</option>
-                  <option value="flexible">Flexible</option>
-                </select>
+                  <SelectTrigger className={inputClasses}>
+                    <SelectValue placeholder="Select timeline" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1e1e1e] border border-gray-800 text-white">
+                    <SelectItem value="asap">ASAP</SelectItem>
+                    <SelectItem value="1-month">Within 1 month</SelectItem>
+                    <SelectItem value="1-3-months">1-3 months</SelectItem>
+                    <SelectItem value="3-6-months">3-6 months</SelectItem>
+                    <SelectItem value="flexible">Flexible</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
             <div>
-              <label htmlFor="projectDescription" className={labelClasses}>Project Description *</label>
+              <label htmlFor="projectDescription" className={labelClasses}>
+                Project Description *
+              </label>
               <textarea
                 id="projectDescription"
                 name="projectDescription"
@@ -261,27 +271,31 @@ export default function ContactForm() {
           </motion.div>
 
           <motion.div custom={5} variants={fadeInUpVariants} initial="hidden" animate="visible">
-            <label htmlFor="referralSource" className={labelClasses}>How did you hear about us?</label>
-            <select
-              id="referralSource"
+            <label htmlFor="referralSource" className={labelClasses}>
+              How did you hear about us?
+            </label>
+            <Select
               name="referralSource"
               value={formData.referralSource}
-              onChange={handleChange}
-              className={inputClasses}
+              onValueChange={(value) => setFormData((prev) => ({ ...prev, referralSource: value }))}
             >
-              <option value="" disabled>Select an option</option>
-              <option value="search">Search Engine</option>
-              <option value="social">Social Media</option>
-              <option value="referral">Referral</option>
-              <option value="advertisement">Advertisement</option>
-              <option value="other">Other</option>
-            </select>
+              <SelectTrigger className={inputClasses}>
+                <SelectValue placeholder="Select an option" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1e1e1e] border border-gray-800 text-white">
+                <SelectItem value="search">Search Engine</SelectItem>
+                <SelectItem value="social">Social Media</SelectItem>
+                <SelectItem value="referral">Referral</SelectItem>
+                <SelectItem value="advertisement">Advertisement</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </motion.div>
 
-          <motion.div 
-            custom={6} 
-            variants={fadeInUpVariants} 
-            initial="hidden" 
+          <motion.div
+            custom={6}
+            variants={fadeInUpVariants}
+            initial="hidden"
             animate="visible"
             className="mt-8 flex justify-center"
           >
@@ -289,24 +303,24 @@ export default function ContactForm() {
               type="submit"
               disabled={formStatus === "submitting" || formStatus === "success"}
               className={`
-                relative overflow-hidden px-8 py-4 rounded-lg font-medium text-lg transition-all duration-300
-                ${formStatus === "success" 
-                  ? "bg-green-600 text-white" 
-                  : "bg-[#c4ff00] text-black hover:bg-[#d8ff4d]"}
+                relative overflow-hidden px-8 py-2 rounded-full font-medium text-lg transition-all duration-300
+                ${formStatus === "success" ? "bg-green-600 text-white" : "bg-[#c4ff00] text-black hover:bg-[#d8ff4d]"}
                 disabled:opacity-70 disabled:cursor-not-allowed
                 w-full md:w-auto min-w-[200px]
               `}
             >
-              <span className={`flex items-center justify-center gap-2 transition-all duration-300 ${formStatus === "submitting" || formStatus === "success" ? "opacity-0" : "opacity-100"}`}>
+              <span
+                className={`flex items-center justify-center gap-2 transition-all duration-300 ${formStatus === "submitting" || formStatus === "success" ? "opacity-0" : "opacity-100"}`}
+              >
                 Submit Request
               </span>
-              
+
               {formStatus === "submitting" && (
                 <span className="absolute inset-0 flex items-center justify-center">
                   <Loader2 className="w-6 h-6 animate-spin text-black" />
                 </span>
               )}
-              
+
               {formStatus === "success" && (
                 <span className="absolute inset-0 flex items-center justify-center">
                   <CheckCircle className="w-6 h-6 text-white" />
@@ -317,33 +331,53 @@ export default function ContactForm() {
           </motion.div>
         </form>
       </div>
-      
+
       <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <motion.div 
-          custom={7} 
-          variants={fadeInUpVariants} 
-          initial="hidden" 
+        <motion.div
+          custom={7}
+          variants={fadeInUpVariants}
+          initial="hidden"
           animate="visible"
           className="bg-[#1e1e1e] rounded-xl p-6 text-center"
         >
           <div className="w-12 h-12 rounded-full bg-[#c4ff00]/10 flex items-center justify-center mx-auto mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c4ff00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#c4ff00"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-white mb-2">Call Us</h3>
           <p className="text-gray-400">+1 (555) 123-4567</p>
         </motion.div>
-        
-        <motion.div 
-          custom={8} 
-          variants={fadeInUpVariants} 
-          initial="hidden" 
+
+        <motion.div
+          custom={8}
+          variants={fadeInUpVariants}
+          initial="hidden"
           animate="visible"
           className="bg-[#1e1e1e] rounded-xl p-6 text-center"
         >
           <div className="w-12 h-12 rounded-full bg-[#c4ff00]/10 flex items-center justify-center mx-auto mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c4ff00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#c4ff00"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
               <polyline points="22,6 12,13 2,6"></polyline>
             </svg>
@@ -351,24 +385,39 @@ export default function ContactForm() {
           <h3 className="text-lg font-semibold text-white mb-2">Email Us</h3>
           <p className="text-gray-400">hello@creativestudio.com</p>
         </motion.div>
-        
-        <motion.div 
-          custom={9} 
-          variants={fadeInUpVariants} 
-          initial="hidden" 
+
+        <motion.div
+          custom={9}
+          variants={fadeInUpVariants}
+          initial="hidden"
           animate="visible"
           className="bg-[#1e1e1e] rounded-xl p-6 text-center"
         >
           <div className="w-12 h-12 rounded-full bg-[#c4ff00]/10 flex items-center justify-center mx-auto mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c4ff00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#c4ff00"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-white mb-2">Visit Us</h3>
-          <p className="text-gray-400">123 Creative St, Design District<br />San Francisco, CA 94103</p>
+          <p className="text-gray-400">
+            123 Creative St, Design District
+            <br />
+            San Francisco, CA 94103
+          </p>
         </motion.div>
       </div>
     </div>
   )
 }
+

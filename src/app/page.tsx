@@ -4,6 +4,7 @@ import Example from "@/components/magicui/HorizontalScrollCarousel";
 import { TextReveal } from "@/components/magicui/text-reveal";
 import { AnimatedTestimonials } from "@/sections/animated-testimonials";
 import ContactForm from "@/sections/contact-form";
+import FAQSection from "@/sections/faq-section";
 import HeroGeometric from "@/sections/hero-geometric";
 
 export default function Home() {
@@ -55,6 +56,7 @@ export default function Home() {
       <Services />
       <Example />
       <AnimatedTestimonials testimonials={testimonials} />
+      <FAQSection/>
       <ContactForm/>
     </>
   );
