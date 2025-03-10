@@ -1,6 +1,7 @@
 "use client"
 
 import { motion, useScroll, useTransform } from "framer-motion"
+import Image from "next/image"
 import { useRef } from "react"
 
 const stats = [
@@ -81,7 +82,7 @@ export default function StatsSection() {
                 <div className="relative p-8 rounded-2xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-sm">
                   <p className="text-white/80 text-lg mb-6">&ldquo;{testimonial.quote}&rdquo;</p>
                   <div className="flex items-center gap-4">
-                    <img
+                    <Image
                       src={testimonial.image || "/placeholder.svg"}
                       alt={testimonial.author}
                       className="w-12 h-12 rounded-full"

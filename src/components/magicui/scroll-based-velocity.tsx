@@ -55,15 +55,7 @@ function ParallaxText({
       if (containerRef.current && textRef.current) {
         const containerWidth = containerRef.current.offsetWidth;
         const textWidth = textRef.current.offsetWidth;
-        let newRepetitions = 1;
-
-        if (textWidth > 0) {
-          newRepetitions = Math.ceil(containerWidth / textWidth) + 2;
-        }
-
-        console.log("Container width:", containerWidth);
-        console.log("Text width:", textWidth);
-        console.log("Calculated repetitions:", newRepetitions);
+        const newRepetitions = Math.ceil(containerWidth / textWidth) + 2;
         setRepetitions(newRepetitions);
       }
     };
@@ -91,12 +83,6 @@ function ParallaxText({
     baseX.set(baseX.get() + moveBy);
   });
 
-  // Log the value of repetitions
-  console.log("Repetitions:", repetitions);
-
-  // Ensure repetitions is a positive integer
-  const validRepetitions = Math.max(1, repetitions);
-
   return (
     <div
       ref={containerRef}
@@ -104,7 +90,7 @@ function ParallaxText({
       {...props}
     >
       <motion.div className="inline-block" style={{ x }}>
-        {Array.from({ length: validRepetitions }).map((_, i) => (
+        {Array.from({ length: repetitions }).map((_, i) => (
           <span key={i} ref={i === 0 ? textRef : null}>
             {children}{" "}
           </span>
@@ -124,7 +110,7 @@ export function VelocityScroll({
   return (
     <div
       className={cn(
-        "relative w-full text-4xl font-bold tracking-[-0.02em] md:text-7xl md:leading-[5rem]",
+        "relative w-full text-4xl text-white font-bold tracking-[-0.02em] md:text-7xl md:leading-[5rem]",
         className,
       )}
       {...props}

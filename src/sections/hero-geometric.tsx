@@ -183,6 +183,20 @@ export default function HeroGeometric({
               Crafting exceptional digital experiences through innovative design and cutting-edge technology.
             </p>
           </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.8 }}
+          >
+            <motion.button
+              whileHover={{ scale: 1.05, backgroundColor: "#d8ff4d" }}
+              whileTap={{ scale: 0.98 }}
+              className="bg-[#c4ff00] text-black font-medium px-8 py-4 rounded-lg transition-all duration-300"
+            >
+              Explore Our Work
+            </motion.button>
+          </motion.div>
         </div>
       </div>
 

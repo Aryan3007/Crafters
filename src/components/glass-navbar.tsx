@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X } from "lucide-react"
-import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
@@ -23,8 +22,8 @@ export default function GlassNavbar() {
 
   const navLinks = [
     { href: "#", label: "Home" },
-    { href: "#", label: "Features" },
-    { href: "#", label: "Pricing" },
+    { href: "#", label: "Services" },
+    { href: "#", label: "Protfolio" },
     { href: "#", label: "About" },
     { href: "#", label: "Contact" },
   ]
@@ -36,15 +35,31 @@ export default function GlassNavbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4 transition-all duration-300",
+          "fixed top-0 left-0 right-0 z-[9999] px-4 md:px-6 py-4 transition-all duration-300",
           scrolled ? "bg-black/30 backdrop-blur-[10px] shadow-lg" : "bg-transparent",
         )}
       >
         <div className="container mx-auto flex items-center justify-between">
           {/* Logo */}
           <Link href="#" className="flex items-center gap-2 z-50">
-            <Image src="https://kokonutui.com/logo.svg" alt="Kokonut UI" width={28} height={28} />
-            <span className="text-white font-medium text-lg">The Crafters</span>
+          <div className="w-10 h-10 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                  </svg>
+                </div>
+            <span className="text-white font-bold text-xl">The Crafters</span>
           </Link>
 
           {/* Desktop Navigation */}
