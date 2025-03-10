@@ -76,10 +76,14 @@ export default function GlassNavbar() {
           </div>
 
           {/* CTA Button */}
-          <div className="hidden md:block">
+          <div className="hidden gap-2 md:flex">
+          {/* <button className="px-4 py-2 rounded-full bg-[#c4ff00] text-black text-sm font-medium hover:shadow-lg hover:shadow-indigo-500/20 transition-all duration-300">
+           Get Started
+            </button> */}
             <button className="px-4 py-2 rounded-full bg-[#c4ff00] text-black text-sm font-medium hover:shadow-lg hover:shadow-indigo-500/20 transition-all duration-300">
             Contact Us
             </button>
+        
           </div>
 
           {/* Mobile Menu Button */}
@@ -133,11 +137,14 @@ export default function GlassNavbar() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.3, delay: 0.6 }}
-                className="mt-6"
+                className="mt-6 flex flex-col gap-2"
               >
                 <button className="px-6 py-3 rounded-full bg-[#c4ff00] text-black font-medium hover:shadow-lg hover:shadow-indigo-500/20 transition-all duration-300">
                   Contact Us
                 </button>
+                {/* <button className="px-6 py-3 rounded-full bg-[#c4ff00] text-black font-medium hover:shadow-lg hover:shadow-indigo-500/20 transition-all duration-300">
+            Sign In
+            </button> */}
               </motion.div>
             </motion.div>
           </motion.div>

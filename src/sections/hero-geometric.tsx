@@ -164,6 +164,8 @@ export default function HeroGeometric({
           </motion.div>
 
           <motion.div custom={1} variants={fadeUpVariants} initial="hidden" animate="visible">
+            <button>
+
             <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-6 md:mb-8 tracking-tight">
               <span className="bg-clip-text text-transparent bg-gradient-to-b from-white to-white/80">{title1}</span>
               <br />
@@ -172,10 +174,11 @@ export default function HeroGeometric({
                   "bg-clip-text text-transparent bg-gradient-to-r from-[#c4ff00] via-white/90 to-[#c4ff00]/70 ",
                   pacifico.className,
                 )}
-              >
+                >
                 {title2}
               </span>
             </h1>
+                </button>
           </motion.div>
 
           <motion.div custom={2} variants={fadeUpVariants} initial="hidden" animate="visible">
@@ -192,7 +195,7 @@ export default function HeroGeometric({
             <motion.button
               whileHover={{ scale: 1.05, backgroundColor: "#d8ff4d" }}
               whileTap={{ scale: 0.98 }}
-              className="bg-[#c4ff00] text-black font-medium px-8 py-4 rounded-lg transition-all duration-300"
+              className="bg-[#c4ff00] text-black font-medium px-4 py-2 rounded-lg transition-all duration-300"
             >
               Explore Our Work
             </motion.button>

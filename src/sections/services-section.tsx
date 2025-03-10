@@ -540,9 +540,7 @@ export default function ServicesSection() {
 
   return (
     <div ref={sectionRef} className="w-full max-w-6xl mx-auto px-4 py-16 md:py-24 relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute top-40 left-0 w-96 h-96 bg-[#c4ff00]/5 rounded-full blur-[100px] -z-10" />
-      <div className="absolute bottom-40 right-0 w-96 h-96 bg-[#c4ff00]/5 rounded-full blur-[100px] -z-10" />
+     
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}

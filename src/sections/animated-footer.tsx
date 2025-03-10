@@ -288,7 +288,7 @@ export default function AnimatedFooter() {
                   aria-label={social.label}
                   whileHover={{ y: -5, scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-10 h-10 rounded-full bg-[#1e1e1e] flex items-center justify-center text-gray-400 hover:text-[#c4ff00] hover:bg-[#252525] transition-colors duration-300"
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-gray-900  bg-[#c4ff00] transition-colors duration-300"
                 >
                   {social.icon}
                 </motion.a>
