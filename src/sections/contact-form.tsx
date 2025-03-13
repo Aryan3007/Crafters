@@ -1,7 +1,5 @@
 "use client"
-
 import type React from "react"
-
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { CheckCircle, Loader2 } from "lucide-react"
@@ -65,7 +63,7 @@ export default function ContactForm({ prefillData }: ContactFormProps) {
         })
         setFormStatus("idle")
       }, 3000)
-    } catch (error) {
+    } catch {
       setFormStatus("error")
       setTimeout(() => setFormStatus("idle"), 3000)
     }
@@ -116,7 +114,7 @@ export default function ContactForm({ prefillData }: ContactFormProps) {
           <span className="text-sm font-medium text-white">Get in Touch</span>
         </div>
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white">
-          Let's Create Something <span className="text-[#c4ff00]">Amazing</span>
+          Let&apos;s Create Something <span className="text-[#c4ff00]">Amazing</span>
         </h2>
         <p className="text-gray-400 max-w-2xl mx-auto">
           Tell us about your project and business needs. Our team of creative experts will help bring your vision to

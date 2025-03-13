@@ -90,7 +90,7 @@ export default function LoginPage() {
       const supabase = createClientComponentClient()
 
       // Use a more robust OAuth sign-in with proper state handling
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const {  error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/api/auth/callback`,
@@ -354,7 +354,7 @@ export default function LoginPage() {
           </form>
 
           <p className="mt-6 text-sm text-gray-400 text-center">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/signup" className="text-[#c4ff00] hover:underline">
               Sign up
             </Link>

@@ -11,7 +11,13 @@ import { useRouter } from "next/navigation"
 export function GlassNavbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [user, setUser] = useState<any>(null)
+  interface CustomUser {
+    id: string;
+    email: string;
+    // Add other user properties as needed
+  }
+
+  const [user, setUser] = useState<CustomUser | null>(null)
   const [userRole, setUserRole] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
@@ -27,7 +33,11 @@ export function GlassNavbar() {
         } = await supabase.auth.getSession()
 
         if (session?.user) {
-          setUser(session.user)
+          setUser({
+            id: session.user.id,
+            email: session.user.email || "",
+            // Map other properties as needed
+          })
 
           // Get the user's role from the profiles table
           const { data: profile } = await supabase.from("profiles").select("role").eq("id", session.user.id).single()

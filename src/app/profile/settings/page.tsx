@@ -8,7 +8,15 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
 export default function SettingsPage() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  interface User {
+    id: string;
+    email?: string;
+    user_metadata?: {
+      full_name?: string;
+    };
+  }
+
+  const [user, setUser] = useState<User | null>(null)
   const supabase = createClientComponentClient()
 
   useEffect(() => {

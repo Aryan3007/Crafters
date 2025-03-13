@@ -4,7 +4,15 @@ import { useState, useEffect } from "react"
 import { debugUserMetadata } from "@/utils/debug-user-metadata"
 
 export default function DebugUserInfo() {
-  const [userData, setUserData] = useState<any>(null)
+  interface UserData {
+    // Define the structure of your user data here
+    id: string;
+    name: string;
+    email: string;
+    // Add other fields as needed
+  }
+
+  const [userData, setUserData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -15,7 +23,12 @@ export default function DebugUserInfo() {
         if (data.error) {
           setError(data.error)
         } else {
-          setUserData(data)
+          setUserData({
+            id: data.id,
+            name: data.user_metadata?.name || "Unknown",
+            email: data.email || "Unknown",
+            // Add other fields as needed
+          } as UserData)
         }
       } catch (err) {
         setError(String(err))

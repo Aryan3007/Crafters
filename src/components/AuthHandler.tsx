@@ -2,7 +2,16 @@
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 
-const createUserInDatabase = async (user: any) => {
+interface User {
+  email?: string;
+  id: string;
+  user_metadata?: {
+    full_name?: string;
+    avatar_url?: string;
+  };
+}
+
+const createUserInDatabase = async (user: User) => {
   if (!user) {
     console.error("No user found, authentication issue.");
     return;
@@ -70,7 +79,7 @@ if (fetchError && Object.keys(fetchError).length > 0) {
         });
   
         // Fetch authenticated user and add to database
-        supabase.auth.getUser().then(({ data, error }) => {
+        supabase.auth.getUser().then(({ data }) => {
           if (data?.user) {
             createUserInDatabase(data.user);
           }
