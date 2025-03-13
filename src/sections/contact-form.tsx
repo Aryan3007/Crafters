@@ -9,14 +9,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 type FormStatus = "idle" | "submitting" | "success" | "error"
 
-export default function ContactForm() {
+interface ContactFormProps {
+  prefillData?: {
+    fullName?: string
+    email?: string
+    companyName?: string
+    phoneNumber?: string
+  }
+}
+
+export default function ContactForm({ prefillData }: ContactFormProps) {
   const [formStatus, setFormStatus] = useState<FormStatus>("idle")
   const [formData, setFormData] = useState({
     // Personal/Business Info
-    fullName: "",
-    email: "",
-    companyName: "",
-    phoneNumber: "",
+    fullName: prefillData?.fullName || "",
+    email: prefillData?.email || "",
+    companyName: prefillData?.companyName || "",
+    phoneNumber: prefillData?.phoneNumber || "",
 
     // Project Info
     projectType: "",
@@ -56,7 +65,7 @@ export default function ContactForm() {
         })
         setFormStatus("idle")
       }, 3000)
-    } catch {
+    } catch (error) {
       setFormStatus("error")
       setTimeout(() => setFormStatus("idle"), 3000)
     }
@@ -107,7 +116,7 @@ export default function ContactForm() {
           <span className="text-sm font-medium text-white">Get in Touch</span>
         </div>
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white">
-          Let&apos;s Create Something <span className="text-[#c4ff00]">Amazing</span>
+          Let's Create Something <span className="text-[#c4ff00]">Amazing</span>
         </h2>
         <p className="text-gray-400 max-w-2xl mx-auto">
           Tell us about your project and business needs. Our team of creative experts will help bring your vision to
@@ -143,7 +152,7 @@ export default function ContactForm() {
                 id="email"
                 name="email"
                 value={formData.email}
-                onChange={handleChange}
+                readOnly
                 required
                 placeholder="john@example.com"
                 className={inputClasses}
@@ -303,7 +312,7 @@ export default function ContactForm() {
               type="submit"
               disabled={formStatus === "submitting" || formStatus === "success"}
               className={`
-                relative overflow-hidden px-8 py-2 rounded-full font-medium text-lg transition-all duration-300
+                relative overflow-hidden px-8 py-4 rounded-lg font-medium text-lg transition-all duration-300
                 ${formStatus === "success" ? "bg-green-600 text-white" : "bg-[#c4ff00] text-black hover:bg-[#d8ff4d]"}
                 disabled:opacity-70 disabled:cursor-not-allowed
                 w-full md:w-auto min-w-[200px]
