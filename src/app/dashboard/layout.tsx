@@ -7,7 +7,7 @@ import { useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { Bell, LogOut, User, Briefcase, Users, BarChart3, Settings, Search, Globe } from "lucide-react"
+import { Bell, LogOut, User, Briefcase, Users, BarChart3, Settings, Globe } from "lucide-react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -15,7 +15,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname()
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("")
 
   const supabase = createClientComponentClient()
 
@@ -118,17 +117,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
 
             <div className="flex items-center gap-6">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-[#1e1e1e] border border-gray-800 rounded-lg px-4 py-2 pl-10 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c4ff00]/50 focus:border-transparent transition-all duration-200 w-64"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
-              </div>
-
+             
               <button className="relative text-gray-400 hover:text-white transition-colors">
                 <Bell className="w-6 h-6" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#c4ff00] text-black text-xs flex items-center justify-center">
