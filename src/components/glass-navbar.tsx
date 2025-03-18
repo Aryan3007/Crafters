@@ -70,8 +70,8 @@ export function GlassNavbar() {
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "#", label: "Services" },
-    { href: "#", label: "Portfolio" },
-    { href: "#", label: "About" },
+    { href: "/portfolio", label: "Portfolio" },
+    { href: "/about", label: "About" },
     { href: "/user-contact-page", label: "Contact" },
   ]
 
