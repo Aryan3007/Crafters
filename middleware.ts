@@ -3,6 +3,11 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 export async function middleware(req: NextRequest) {
+  // Skip middleware for API routes
+  if (req.nextUrl.pathname.startsWith("/api/")) {
+    return NextResponse.next()
+  }
+
   // Create a Supabase client configured to use cookies
   const res = NextResponse.next()
   const supabase = createMiddlewareClient({ req, res })
@@ -78,6 +83,11 @@ export async function middleware(req: NextRequest) {
 
 // Specify the paths that should be checked by the middleware
 export const config = {
-  matcher: ["/profile/:path*", "/dashboard/:path*", "/user-contact-page/:path*"],
+  matcher: [
+    // Include all paths that need middleware
+    "/profile/:path*",
+    "/dashboard/:path*",
+    "/user-contact-page/:path*",
+  ],
 }
 

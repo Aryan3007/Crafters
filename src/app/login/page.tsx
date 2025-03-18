@@ -7,6 +7,10 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { Eye, EyeOff, AlertCircle, Shield, Zap, Lock } from "lucide-react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { useRouter } from "next/navigation"
+
+// Add this import at the top of the file
+import { ResendVerification } from "@/components/resend-verification"
 
 const features = [
   {
@@ -27,6 +31,8 @@ const features = [
 ]
 
 export default function LoginPage() {
+  const router = useRouter()
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -35,26 +41,27 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [showResendVerification, setShowResendVerification] = useState(false)
 
-  // Add this near the top of the component, after the useState declarations
-  // This will extract error information from the URL
   useEffect(() => {
     // Check for error parameters in the URL
     const urlParams = new URLSearchParams(window.location.search)
     const urlError = urlParams.get("error")
-    const urlErrorDescription = urlParams.get("error_description")
 
     if (urlError) {
-      let errorMessage = urlError
+      setError(urlError)
 
-      // Format the error message for better readability
-      if (urlError === "bad_oauth_state" || urlError === "invalid_request") {
-        errorMessage = "Authentication session expired or invalid. Please try again."
-      } else if (urlErrorDescription) {
-        errorMessage = urlErrorDescription
+      // Show the resend verification component if the error is about an expired link
+      if (urlError.includes("expired") || urlError.includes("verification")) {
+        setShowResendVerification(true)
       }
+    }
 
-      setError(errorMessage)
+    // Check for success message
+    const message = urlParams.get("message")
+    if (message) {
+      setSuccessMessage(message)
     }
   }, [])
 
@@ -63,17 +70,89 @@ export default function LoginPage() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  // Update the handleSubmit function with improved error handling
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setSuccessMessage(null)
     setIsLoading(true)
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
       if (!formData.email || !formData.password) {
         throw new Error("Please fill in all fields")
       }
-      console.log("Login successful", formData)
+
+      const supabase = createClientComponentClient()
+
+      // Sign in with email and password
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      })
+
+      if (signInError) throw signInError
+
+      console.log("Login successful", data)
+
+      // Redirect based on user role
+      try {
+        // We'll fetch the user's profile to determine their role
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", data.user.id)
+          .single()
+
+        if (profileError) {
+          console.error("Error fetching profile:", profileError)
+
+          // If profile doesn't exist, create one with default role
+          if (profileError.code === "PGRST116") {
+            const { data: newProfile, error: insertError } = await supabase
+              .from("profiles")
+              .insert({
+                id: data.user.id,
+                email: data.user.email,
+                role: "user", // Default role
+              })
+              .select()
+              .single()
+
+            if (insertError) {
+              console.error("Error creating profile:", insertError)
+              router.push("/profile") // Default fallback
+              return
+            }
+
+            // Redirect based on the new profile
+            if (newProfile.role === "admin") {
+              router.push("/dashboard")
+            } else if (newProfile.role === "client") {
+              router.push("/profile")
+            } else {
+              router.push("/user-contact-page")
+            }
+            return
+          }
+
+          // For other profile errors, use a default redirect
+          router.push("/profile")
+          return
+        }
+
+        // Redirect based on role
+        if (profileData.role === "admin") {
+          router.push("/dashboard")
+        } else if (profileData.role === "client") {
+          router.push("/profile")
+        } else {
+          router.push("/user-contact-page")
+        }
+      } catch (profileErr) {
+        console.error("Error in profile handling:", profileErr)
+        // Default redirect if we can't determine role
+        router.push("/profile")
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred")
     } finally {
@@ -90,7 +169,7 @@ export default function LoginPage() {
       const supabase = createClientComponentClient()
 
       // Use a more robust OAuth sign-in with proper state handling
-      const {  error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/api/auth/callback`,
@@ -115,7 +194,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-black flex">
       {/* Left side */}
-      <div className="w-0 lg:w-[45%] bg-[#0a0a0a] p-8 lg:p-12 hidden lg:flex flex-col">
+      <div className="w-0 lg:w-[55%] bg-[#0a0a0a] p-8 lg:p-12 hidden lg:flex flex-col">
         <div>
           <Link href="/" className="flex items-center gap-2 mb-16">
             <div className="w-8 h-8 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
@@ -257,6 +336,17 @@ export default function LoginPage() {
             </motion.div>
           )}
 
+          {successMessage && (
+            <motion.div
+              className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-6 flex items-center gap-2 text-sm text-green-200"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <AlertCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+              <span>{successMessage}</span>
+            </motion.div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-1.5">
@@ -268,6 +358,7 @@ export default function LoginPage() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                required
                 className="w-full bg-[#1e1e1e] border border-gray-800 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c4ff00]/50 focus:border-transparent transition-all duration-200"
                 placeholder="you@example.com"
               />
@@ -289,6 +380,7 @@ export default function LoginPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  required
                   className="w-full bg-[#1e1e1e] border border-gray-800 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c4ff00]/50 focus:border-transparent transition-all duration-200 pr-10"
                   placeholder="••••••••"
                 />
@@ -341,6 +433,8 @@ export default function LoginPage() {
               )}
             </motion.button>
           </form>
+
+          {showResendVerification && <ResendVerification />}
 
           <p className="mt-6 text-sm text-gray-400 text-center">
             Don&apos;t have an account?{" "}

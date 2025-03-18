@@ -1,10 +1,13 @@
 "use client"
+
 import type React from "react"
+
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { Eye, EyeOff, AlertCircle, Users, Shield, Zap } from "lucide-react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { useRouter } from "next/navigation"
 
 const features = [
   {
@@ -25,16 +28,19 @@ const features = [
 ]
 
 export default function SignupPage() {
+  const router = useRouter()
+
+  // Update the formData state to include all required fields
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    username: "",
     email: "",
     password: "",
+    fullName: "",
+    companyName: "",
   })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   // Add this near the top of the component, after the useState declarations
   // This will extract error information from the URL
@@ -63,15 +69,49 @@ export default function SignupPage() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  // Replace the handleSubmit function with this implementation
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setSuccessMessage(null)
     setIsLoading(true)
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      console.log("Signup data:", formData)
+      const supabase = createClientComponentClient()
+
+      // First, sign up the user with Supabase Auth
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.fullName,
+            company_name: formData.companyName,
+          },
+          emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+        },
+      })
+
+      if (signUpError) throw signUpError
+
+      // Check if email confirmation is required
+      if (data?.user?.identities?.length === 0) {
+        setSuccessMessage("This email is already registered. Please check your email for the confirmation link.")
+      } else {
+        // Redirect to verification page
+        router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`)
+        return
+      }
+
+      // Clear form after successful submission
+      setFormData({
+        email: "",
+        password: "",
+        fullName: "",
+        companyName: "",
+      })
     } catch (err) {
+      console.error("Signup error:", err)
       setError(err instanceof Error ? err.message : "An error occurred during signup")
     } finally {
       setIsLoading(false)
@@ -112,7 +152,7 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-black flex">
       {/* Left side */}
-      <div className="w-0 lg:w-[45%] bg-[#0a0a0a] p-8 lg:p-12 hidden lg:flex flex-col">
+      <div className="w-0 lg:w-[55%] bg-[#0a0a0a] p-8 lg:p-12 hidden lg:flex flex-col">
         <div>
           <Link href="/" className="flex items-center gap-2 mb-16">
             <div className="w-8 h-8 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
@@ -173,7 +213,7 @@ export default function SignupPage() {
       </div>
 
       {/* Right side */}
-      <div className="flex-1 flex flex-col p-8 lg:p-12">
+      <div className="flex-1 flex max-w-xl mx-auto flex-col p-8 lg:p-12">
         <div className="lg:hidden flex justify-between items-center mb-8">
           <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
@@ -201,9 +241,9 @@ export default function SignupPage() {
           </Link>
         </div>
 
-        <div className="max-w-md w-full mx-auto">
+        <div className=" w-full mx-auto">
           <div className="mb-8">
-            <h2 className="text-xl text-white mb-2">Register with</h2>
+            <h2 className="text-xl text-white mb-2">Sign up with</h2>
             <div className="grid grid-cols-1 gap-3">
               <button
                 onClick={handleGoogleSignUp}
@@ -255,55 +295,18 @@ export default function SignupPage() {
           </motion.div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-400 mb-1.5">
-                First Name
-              </label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                className="w-full bg-[#1e1e1e] border border-gray-800 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c4ff00]/50 focus:border-transparent transition-all duration-200"
-                placeholder="Alaska"
-              />
-            </div>
-            <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-400 mb-1.5">
-                Last Name
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                className="w-full bg-[#1e1e1e] border border-gray-800 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c4ff00]/50 focus:border-transparent transition-all duration-200"
-                placeholder="Young"
-              />
-            </div>
-          </div>
+        {successMessage && (
+          <motion.div
+            className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-6 flex items-center gap-2 text-sm text-green-200"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <AlertCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+            <span>{successMessage}</span>
+          </motion.div>
+        )}
 
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-400 mb-1.5">
-              Username
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="w-full bg-[#1e1e1e] border border-gray-800 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c4ff00]/50 focus:border-transparent transition-all duration-200"
-                placeholder="alaska2104"
-              />
-            </div>
-          </div>
-
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-1.5">
               Email
@@ -315,8 +318,9 @@ export default function SignupPage() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                required
                 className="w-full bg-[#1e1e1e] border border-gray-800 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c4ff00]/50 focus:border-transparent transition-all duration-200"
-                placeholder="alaska.young@example.com"
+                placeholder="you@example.com"
               />
             </div>
           </div>
@@ -332,6 +336,7 @@ export default function SignupPage() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                required
                 className="w-full bg-[#1e1e1e] border border-gray-800 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c4ff00]/50 focus:border-transparent transition-all duration-200 pr-10"
                 placeholder="••••••••"
               />
@@ -344,6 +349,38 @@ export default function SignupPage() {
               </button>
             </div>
             <p className="text-xs text-gray-500 mt-1.5">Minimum length is 8 characters</p>
+          </div>
+
+          <div>
+            <label htmlFor="fullName" className="block text-sm font-medium text-gray-400 mb-1.5">
+              Full Name
+            </label>
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              required
+              className="w-full bg-[#1e1e1e] border border-gray-800 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c4ff00]/50 focus:border-transparent transition-all duration-200"
+              placeholder="Alaska Young"
+            />
+          </div>
+
+          {/* Add company name field to the form */}
+          <div className="mb-4">
+            <label htmlFor="companyName" className="block text-sm font-medium text-gray-400 mb-1">
+              Company Name (Optional)
+            </label>
+            <input
+              type="text"
+              id="companyName"
+              name="companyName"
+              value={formData.companyName}
+              onChange={handleChange}
+              className="w-full bg-[#1e1e1e] border border-gray-800 rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c4ff00]/50 focus:border-transparent transition-all duration-200"
+              placeholder="Your Company Ltd."
+            />
           </div>
 
           <motion.button

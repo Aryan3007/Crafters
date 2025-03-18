@@ -2,15 +2,24 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import { cookies } from "next/headers"
 import { type NextRequest, NextResponse } from "next/server"
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+// Define the context type explicitly
+type Context = {
+  params: {
+    id: string
+  }
+}
+
+// Use the Context type for all handlers
+export async function GET(request: NextRequest, context: Context) {
   try {
+    const { id } = context.params
     const supabase = createRouteHandlerClient({ cookies })
 
     // Get project by ID
     const { data, error } = await supabase
       .from("projects")
       .select("*, profiles:client_id(id, full_name, email, avatar_url, company_name)")
-      .eq("id", params.id)
+      .eq("id", id)
       .single()
 
     if (error) {
@@ -29,8 +38,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, context: Context) {
   try {
+    const { id } = context.params
     const supabase = createRouteHandlerClient({ cookies })
 
     // Check if user is authenticated
@@ -51,7 +61,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         ...body,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", params.id)
+      .eq("id", id)
       .select("*, profiles:client_id(id, full_name, email, avatar_url, company_name)")
       .single()
 
@@ -71,8 +81,9 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: Context) {
   try {
+    const { id } = context.params
     const supabase = createRouteHandlerClient({ cookies })
 
     // Check if user is authenticated
@@ -91,7 +102,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
 
     // Delete project
-    const { error } = await supabase.from("projects").delete().eq("id", params.id)
+    const { error } = await supabase.from("projects").delete().eq("id", id)
 
     if (error) {
       console.error("Error deleting project:", error)

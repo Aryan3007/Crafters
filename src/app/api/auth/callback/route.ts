@@ -2,139 +2,144 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 
+export const dynamic = "force-dynamic"
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get("code")
-
-  // Check for error parameters in the URL
   const error = requestUrl.searchParams.get("error")
+  const errorCode = requestUrl.searchParams.get("error_code")
   const errorDescription = requestUrl.searchParams.get("error_description")
 
-  // If there's an error in the callback, redirect to login with the error
+  // For debugging
+  console.log("Auth callback received:", {
+    url: request.url,
+    code: code ? "present" : "missing",
+    error,
+    errorCode,
+    errorDescription,
+  })
+
+  // Handle error cases
   if (error) {
-    console.error(`Auth error: ${error}`, errorDescription)
-    return NextResponse.redirect(
-      new URL(
-        `/login?error=${encodeURIComponent(error)}&error_description=${encodeURIComponent(errorDescription || "")}`,
-        request.url,
-      ),
-    )
+    let redirectUrl = "/login?error="
+
+    if (errorCode === "otp_expired") {
+      redirectUrl += encodeURIComponent("Email verification link has expired. Please request a new one.")
+      return NextResponse.redirect(new URL(redirectUrl, requestUrl.origin))
+    } else {
+      redirectUrl += encodeURIComponent(errorDescription || error)
+      return NextResponse.redirect(new URL(redirectUrl, requestUrl.origin))
+    }
   }
 
   if (code) {
-    try {
-      const cookieStore = cookies()
-      const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    const cookieStore = cookies()
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
-      // Exchange the code for a session
-      const { data, error: sessionError } = await supabase.auth.exchangeCodeForSession(code)
+    try {
+      console.log("Exchanging code for session...")
+      const { error: sessionError } = await supabase.auth.exchangeCodeForSession(code)
 
       if (sessionError) {
-        console.error("Error exchanging code for session:", sessionError)
-        return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(sessionError.message)}`, request.url))
+        console.error("Session exchange error:", sessionError)
+        return NextResponse.redirect(
+          new URL(`/login?error=${encodeURIComponent(sessionError.message)}`, requestUrl.origin),
+        )
       }
 
-      if (!data.user) {
-        console.error("No user data returned from session exchange")
-        return NextResponse.redirect(new URL("/login?error=no_user_data", request.url))
+      console.log("Session exchange successful")
+
+      // Get the current user
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser()
+
+      if (userError) {
+        console.error("Error getting user:", userError)
+        return NextResponse.redirect(
+          new URL(`/login?error=${encodeURIComponent(userError.message)}`, requestUrl.origin),
+        )
       }
 
-      // Get the user's email to determine role
-      const email = data.user.email
-
-      if (!email) {
-        console.error("No email found in user data")
-        return NextResponse.redirect(new URL("/login?error=no_email_found", request.url))
+      if (!user) {
+        console.error("No user found after session exchange")
+        return NextResponse.redirect(new URL("/login?error=User not found", requestUrl.origin))
       }
 
-      // Create or update the user profile manually
-      try {
-        // First check if profile already exists
-        const { data: existingProfile } = await supabase.from("profiles").select("id").eq("id", data.user.id).single()
+      console.log("User found:", { id: user.id, email: user.email })
 
-        const isAdmin = email.endsWith("@creativestudio.com")
-        const userData = {
-          id: data.user.id,
-          role: isAdmin ? "admin" : "user", // Default to 'user' instead of 'client'
-          email: email, // Add email field
-          full_name:
-            data.user.user_metadata?.full_name ||
-            data.user.user_metadata?.name ||
-            `User ${data.user.id.substring(0, 8)}`,
-          avatar_url: data.user.user_metadata?.avatar_url || data.user.user_metadata?.picture,
-          updated_at: new Date().toISOString(),
-        }
-
-        let profileError
-
-        if (existingProfile) {
-          // Update existing profile
-          const { error } = await supabase
-            .from("profiles")
-            .update({
-              full_name: userData.full_name,
-              avatar_url: userData.avatar_url,
-              email: userData.email, // Update email field
-              updated_at: userData.updated_at,
-            })
-            .eq("id", data.user.id)
-
-          profileError = error
-        } else {
-          // Insert new profile
-          const { error } = await supabase.from("profiles").insert({
-            ...userData,
-            created_at: new Date().toISOString(),
-          })
-
-          profileError = error
-        }
-
-        if (profileError) {
-          console.error("Error managing profile:", profileError)
-          // Continue anyway to avoid blocking the user
-        }
-      } catch (profileError) {
-        console.error("Exception managing profile:", profileError)
-        // Continue anyway to avoid blocking the user
-      }
-
-      // Query the profile to get the role for redirection
-      const { data: profile, error: roleError } = await supabase
+      // Get the user's profile to determine their role
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("role")
-        .eq("id", data.user.id)
+        .eq("id", user.id)
         .single()
 
-      // Add debug logging
-      console.log("Profile data:", profile)
-      console.log("Role error:", roleError)
+      if (profileError) {
+        console.log("Profile error:", profileError)
 
-      if (roleError) {
-        console.error("Error fetching user role:", roleError)
-        // Default to profile page if we can't determine role
-        return NextResponse.redirect(new URL("/profile", request.url))
+        // Try to create the profile if it doesn't exist
+        if (profileError.code === "PGRST116") {
+          console.log("Profile not found, creating new profile")
+
+          // Determine role based on email
+          const isAdmin = user.email?.endsWith("@creativestudio.com") || false
+
+          // Create profile
+          const { error: insertError } = await supabase.from("profiles").insert({
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata.full_name || user.user_metadata.name,
+            avatar_url: user.user_metadata.avatar_url || user.user_metadata.picture,
+            company_name: user.user_metadata.company_name,
+            role: isAdmin ? "admin" : "user",
+          })
+
+          if (insertError) {
+            console.error("Error creating profile:", insertError)
+            return NextResponse.redirect(
+              new URL(`/login?error=${encodeURIComponent("Failed to create user profile")}`, requestUrl.origin),
+            )
+          }
+
+          console.log("Profile created successfully")
+
+          // Redirect to default location for new users
+          return NextResponse.redirect(new URL("/user-contact-page", requestUrl.origin))
+        } else {
+          // Some other error with profile fetching
+          return NextResponse.redirect(
+            new URL(`/login?error=${encodeURIComponent("Error fetching user profile")}`, requestUrl.origin),
+          )
+        }
       }
+
+      console.log("Profile found:", profile)
 
       // Redirect based on role
       if (profile?.role === "admin") {
-        console.log("Redirecting to dashboard - user is admin")
-        return NextResponse.redirect(new URL("/dashboard", request.url))
+        console.log("Redirecting to admin dashboard")
+        return NextResponse.redirect(new URL("/dashboard", requestUrl.origin))
       } else if (profile?.role === "client") {
-        console.log("Redirecting to profile - user is client")
-        return NextResponse.redirect(new URL("/profile", request.url))
+        console.log("Redirecting to client profile")
+        return NextResponse.redirect(new URL("/profile", requestUrl.origin))
       } else {
-        // User role
-        console.log("Redirecting to user-contact-page - user is regular user")
-        return NextResponse.redirect(new URL("/user-contact-page", request.url))
+        // Default to user role
+        console.log("Redirecting to user contact page")
+        return NextResponse.redirect(new URL("/user-contact-page", requestUrl.origin))
       }
     } catch (error) {
-      console.error("Exception in auth callback:", error)
-      return NextResponse.redirect(new URL("/login?error=server_error", request.url))
+      console.error("Unexpected error in auth callback:", error)
+      return NextResponse.redirect(
+        new URL("/login?error=Something went wrong during authentication", requestUrl.origin),
+      )
     }
   }
 
   // No code provided
-  return NextResponse.redirect(new URL("/login?error=no_code_provided", request.url))
+  console.error("No code provided in auth callback")
+  return NextResponse.redirect(new URL("/login?error=No code provided", requestUrl.origin))
 }
 
