@@ -1,94 +1,57 @@
-"use client"
+import { getProjectById } from "@/app/actions/project-actions"
+import { ProjectForm } from "@/components/admin/project-form"
+import { notFound } from "next/navigation"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, Eye } from "lucide-react"
 
-import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
-import { AlertCircle } from "lucide-react"
-
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Skeleton } from "@/components/ui/skeleton"
-
-import { ProjectEditForm } from "@/components/project-edit-form"
-import { ProjectDetail } from "@/components/project-detail"
-import { fetchProject, Project } from "../../../../../services/project"
-
-export default function ProjectPage() {
-  const params = useParams()
-  const projectId = params.id as string
-
-  const [project, setProject] = useState<Project | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
-
-  useEffect(() => {
-    const loadProject = async () => {
-      setIsLoading(true)
-      setError(null)
-
-      try {
-        const data = await fetchProject(projectId)
-        setProject(data)
-      } catch (err) {
-        console.error("Error loading project:", err)
-        setError(err instanceof Error ? err.message : "Failed to load project")
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadProject()
-  }, [projectId])
-
-  const handleProjectUpdate = (updatedProject: Project) => {
-    setProject(updatedProject)
-    setIsEditing(false)
+interface ProjectEditPageProps {
+  params: {
+    id: string
   }
+}
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-10 w-64" />
-          <Skeleton className="h-10 w-32" />
-        </div>
-        <Skeleton className="h-[500px] w-full" />
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto py-8">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      </div>
-    )
-  }
+export default async function ProjectEditPage({ params }: ProjectEditPageProps) {
+  console.log(`Rendering project edit page for ID: ${params.id}`)
+  const project = await getProjectById(params.id)
 
   if (!project) {
-    return (
-      <div className="container mx-auto py-8">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Not Found</AlertTitle>
-          <AlertDescription>The requested project could not be found.</AlertDescription>
-        </Alert>
-      </div>
-    )
+    console.log(`Project not found for ID: ${params.id}`)
+    notFound()
   }
 
   return (
-    <>
-      {isEditing ? (
-        <ProjectEditForm project={project} onCancel={() => setIsEditing(false)} onSave={handleProjectUpdate} />
-      ) : (
-        <ProjectDetail project={project} onEdit={() => setIsEditing(true)} />
-      )}
-    </>
+    <div className="container mx-auto pb-8">
+       <Link href="/dashboard/projects">
+            <span className=" text-[#c4ff00] flex justify-start items-center gap-2 border-gray-800">
+              <ArrowLeft className="h-4 w-4 mr-2" /> Back to Projects
+            </span>
+          </Link>
+      <div className="flex items-center justify-between my-6">
+        
+        <div className="flex items-center gap-4">
+         
+          <div>
+            <h1 className="text-3xl font-bold">{project.name}</h1>
+            <p className="text-gray-400 mt-1">Edit project details, timeline, and deliverables</p>
+          </div>
+        </div>
+        <Link href={`/projects/${project.id}`} target="_blank">
+          <Button  className="bg-[#c4ff00] hover:bg-[#c4ff00]/90 text-black border-gray-800" variant="outline">
+            <Eye className="h-4 w-4 mr-2" /> Client View
+          </Button>
+        </Link>
+      </div>
+
+      <ProjectForm
+        project={project}
+        onSave={async (updatedProject) => {
+          "use server"
+          const { saveProject } = await import("@/app/actions/project-actions")
+          return saveProject(updatedProject)
+        }}
+      />
+    </div>
   )
 }
 

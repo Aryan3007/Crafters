@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { Pacifico } from 'next/font/google'
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 const pacifico = Pacifico({
   subsets: ["latin"],
@@ -192,13 +193,15 @@ export default function HeroGeometric({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.8 }}
           >
+          <Link href={"/portfolio"}>
             <motion.button
               whileHover={{ scale: 1.05, backgroundColor: "#d8ff4d" }}
               whileTap={{ scale: 0.98 }}
               className="bg-[#c4ff00] text-black font-medium px-4 py-2 rounded-lg transition-all duration-300"
-            >
+              >
               Explore Our Work
             </motion.button>
+              </Link>
           </motion.div>
         </div>
       </div>

@@ -2,66 +2,61 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { Filter, PlusCircle, Edit, FileText, MoreHorizontal } from 'lucide-react'
+import { Filter, PlusCircle, Edit, FileText, Trash2 } from "lucide-react"
 import { useState, useEffect } from "react"
-
-// Define client interface
-interface Client {
-  id: number
-  name: string
-  email: string
-  avatar: string
-  projectsCount: number
-  status: "active" | "pending" | "inactive"
-  joinedDate: string
-}
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { useToast } from "@/hooks/use-toast"
+import { Client, fetchClients } from "@/app/api/clients/route"
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const { toast } = useToast()
+  const supabase = createClientComponentClient()
 
   useEffect(() => {
-    // This would normally fetch from an API
-    setClients([
-      {
-        id: 1,
-        name: "John Smith",
-        email: "john@example.com",
-        avatar: "/placeholder.svg?height=40&width=40",
-        projectsCount: 2,
-        status: "active",
-        joinedDate: "2023-05-15",
-      },
-      {
-        id: 2,
-        name: "Sarah Johnson",
-        email: "sarah@example.com",
-        avatar: "/placeholder.svg?height=40&width=40",
-        projectsCount: 1,
-        status: "active",
-        joinedDate: "2023-06-22",
-      },
-      {
-        id: 3,
-        name: "Michael Brown",
-        email: "michael@example.com",
-        avatar: "/placeholder.svg?height=40&width=40",
-        projectsCount: 1,
-        status: "pending",
-        joinedDate: "2023-09-10",
-      },
-      {
-        id: 4,
-        name: "Emily Davis",
-        email: "emily@example.com",
-        avatar: "/placeholder.svg?height=40&width=40",
-        projectsCount: 0,
-        status: "inactive",
-        joinedDate: "2023-07-05",
-      },
-    ])
-  }, [])
+    const loadClients = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
 
-  // Function to get client status color
+        // Fetch clients from the database
+        const clientsData = await fetchClients()
+
+        // For each client, fetch their project count
+        const clientsWithProjects = await Promise.all(
+          clientsData.map(async (client) => {
+            const { count, error } = await supabase
+              .from("projects")
+              .select("*", { count: "exact", head: true })
+              .eq("client_id", client.id)
+
+            return {
+              ...client,
+              projectsCount: count || 0,
+            }
+          }),
+        )
+
+        setClients(clientsWithProjects)
+      } catch (err) {
+        console.error("Error loading clients:", err)
+        setError("Failed to load clients. Please try again.")
+        toast({
+          title: "Error",
+          description: "Failed to load clients. Please try again.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadClients()
+  }, [supabase, toast])
+
+  // Function to get client status color - we'll assume all database clients are active
   const getClientStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -73,6 +68,31 @@ export default function ClientsPage() {
       default:
         return "bg-gray-500/20 text-gray-400"
     }
+  }
+
+  // Function to format date
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "N/A"
+    return new Date(dateString).toLocaleDateString()
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c4ff00]"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-lg">
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()} className="mt-2 text-sm underline">
+          Try again
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -93,63 +113,72 @@ export default function ClientsPage() {
         </div>
       </div>
 
-      <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-800">
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Client</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Email</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Projects</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Status</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Joined Date</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {clients.map((client) => (
-                <tr key={client.id} className="border-b border-gray-800 hover:bg-[#1e1e1e]">
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full overflow-hidden">
-                        <Image
-                          src={client.avatar || "/placeholder.svg"}
-                          alt={client.name}
-                          width={40}
-                          height={40}
-                          className="object-cover"
-                        />
-                      </div>
-                      <span>{client.name}</span>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4 text-gray-400">{client.email}</td>
-                  <td className="py-3 px-4">{client.projectsCount}</td>
-                  <td className="py-3 px-4">
-                    <span className={`text-xs px-2 py-1 rounded-full ${getClientStatusColor(client.status)}`}>
-                      {client.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">{new Date(client.joinedDate).toLocaleDateString()}</td>
-                  <td className="py-3 px-4">
-                    <div className="flex gap-2">
-                      <button className="text-gray-400 hover:text-white transition-colors">
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button className="text-gray-400 hover:text-white transition-colors">
-                        <FileText className="w-4 h-4" />
-                      </button>
-                      <button className="text-gray-400 hover:text-white transition-colors">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {clients.length === 0 ? (
+        <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-8 text-center">
+          <p className="text-gray-400">No clients found. Add your first client to get started.</p>
         </div>
-      </div>
+      ) : (
+        <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-800">
+                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Client</th>
+                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Email</th>
+                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Company</th>
+                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Projects</th>
+                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Joined Date</th>
+                  <th className="text-left py-3 px-4 text-gray-400 font-medium">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {clients.map((client) => (
+                  <tr key={client.id} className="border-b border-gray-800 hover:bg-[#1e1e1e]">
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-800">
+                          {client.avatar_url ? (
+                            <Image
+                              src={client.avatar_url || "/placeholder.svg"}
+                              alt={client.full_name || "Client"}
+                              width={40}
+                              height={40}
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                              {(client.full_name || "?")[0].toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <span>{client.full_name || "Unnamed Client"}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-gray-400">{client.email || "No email"}</td>
+                    <td className="py-3 px-4 text-gray-400">{client.company_name || "N/A"}</td>
+                    <td className="py-3 px-4">{client.projectsCount}</td>
+                    <td className="py-3 px-4">{formatDate(client.created_at)}</td>
+                    <td className="py-3 px-4">
+                      <div className="flex gap-2">
+                        <button className="text-gray-400 hover:text-white transition-colors" title="Edit client">
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button className="text-gray-400 hover:text-white transition-colors" title="View details">
+                          <FileText className="w-4 h-4" />
+                        </button>
+                        <button className="text-gray-400 hover:text-red-400 transition-colors" title="Delete client">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </motion.div>
   )
 }
+

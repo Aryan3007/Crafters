@@ -3,6 +3,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 // import CursorFollower from "@/components/cursor-follower";
 import AuthHandler from "@/components/AuthHandler";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,7 @@ export default function RootLayout({
         <AuthHandler />
         {children}
         {/* <CursorFollower /> */}
+         <Toaster />
 
       </body>
     </html>
