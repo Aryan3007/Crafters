@@ -14,6 +14,7 @@ interface ProjectEditPageProps {
 export default async function ProjectEditPage({ params }: ProjectEditPageProps) {
   console.log(`Rendering project edit page for ID: ${params.id}`)
   const project = await getProjectById(params.id)
+  console.log("project already", project);
 
   if (!project) {
     console.log(`Project not found for ID: ${params.id}`)

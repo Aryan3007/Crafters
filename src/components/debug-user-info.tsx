@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { debugUserMetadata } from "@/utils/debug-user-metadata"
+import { debugUserMetadata } from "@/app/utils/debug-user-metadata"
 
 export default function DebugUserInfo() {
   interface UserData {

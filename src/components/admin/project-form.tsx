@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import type { Project, ProjectPhase, Deliverable, ProjectStatus, PhaseStatus, DeliverableType } from "../../../types/project"
 import { Button } from "@/components/ui/button"
@@ -15,6 +15,8 @@ import { Label } from "@/components/ui/label"
 import { Trash2, Plus, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { v4 as uuidv4 } from "uuid"
+import { Client, fetchClients } from "@/app/api/clients/route"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
 interface ProjectFormProps {
   project: Project
@@ -24,8 +26,55 @@ interface ProjectFormProps {
 export function ProjectForm({ project: initialProject, onSave }: ProjectFormProps) {
   const [project, setProject] = useState<Project>(initialProject)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const supabase = createClientComponentClient()
+  const [clients, setClients] = useState<Client[]>([])
+
   const router = useRouter()
   const { toast } = useToast()
+
+  useEffect(() => {
+    const loadClients = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+
+        // Fetch clients from the database
+        const clientsData = await fetchClients()
+
+        // For each client, fetch their project count
+        const clientsWithProjects = await Promise.all(
+          clientsData.map(async (client) => {
+            const { count, error } = await supabase
+              .from("projects")
+              .select("*", { count: "exact", head: true })
+              .eq("client_id", client.id)
+
+            return {
+              ...client,
+              projectsCount: count || 0,
+            }
+          }),
+        )
+
+        setClients(clientsWithProjects)
+        console.log(clientsWithProjects);
+      } catch (err) {
+        console.error("Error loading clients:", err)
+        setError("Failed to load clients. Please try again.")
+        toast({
+          title: "Error",
+          description: "Failed to load clients. Please try again.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadClients()
+  }, [supabase, toast])
 
   // Project status options
   const projectStatusOptions: ProjectStatus[] = ["Not Started", "In Progress", "Completed", "On Hold"]
@@ -141,6 +190,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
+
     e.preventDefault()
     setIsSubmitting(true)
 
@@ -187,7 +237,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
               <div className="space-y-2">
                 <Label htmlFor="name">Project Name</Label>
                 <Input
-                className="border-gray-800"
+                  className="border-gray-800"
                   id="name"
                   value={project.name}
                   onChange={(e) => handleProjectChange("name", e.target.value)}
@@ -198,21 +248,39 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
 
               <div className="space-y-2">
                 <Label htmlFor="client">Client</Label>
-                <Input
-                 className="border-gray-800"
-                  id="client"
-                  value={project.client}
-                  onChange={(e) => handleProjectChange("client", e.target.value)}
-                  placeholder="Enter client name"
-                  required
-                />
-              </div>
+                <Select
+                  value={project.client?.user_id ? `${project.client.name}|||${clients.find((c) => c.id === project.client.user_id)?.email}` : ""}
+                  onValueChange={(value) => {
+                    const [full_name, email] = value.split("|||");
+                    const selectedClient = clients.find((client) => client.full_name === full_name && client.email === email);
+                    if (selectedClient) {
+                      handleProjectChange("client", {
+                        name: selectedClient.full_name,
+                        user_id: selectedClient.id, // Include user_id
+                      });
+                    }
+                  }}
+                >
+                  <SelectTrigger className="border-gray-800">
+                    <SelectValue placeholder="Select a client" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clients.map((client, index) => (
+                      <SelectItem key={index} value={`${client.full_name}|||${client.email}`}>
+                        {client.full_name} <span className="text-xs text-gray-500">({client.email})</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>;
+
+
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
-               className="border-gray-800"
+                className="border-gray-800"
                 id="description"
                 value={project.description}
                 onChange={(e) => handleProjectChange("description", e.target.value)}
@@ -226,7 +294,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
               <div className="space-y-2">
                 <Label htmlFor="type">Project Type</Label>
                 <Input
-                 className="border-gray-800"
+                  className="border-gray-800"
                   id="type"
                   value={project.type}
                   onChange={(e) => handleProjectChange("type", e.target.value)}
@@ -237,7 +305,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
 
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
-                <Select  className="border-gray-800" value={project.status} onValueChange={(value) => handleProjectChange("status", value)}>
+                <Select className="border-gray-800" value={project.status} onValueChange={(value) => handleProjectChange("status", value)}>
                   <SelectTrigger id="status">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
@@ -267,7 +335,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
               <div className="space-y-2">
                 <Label htmlFor="startDate">Start Date</Label>
                 <Input
-                 className="border-gray-800"
+                  className="border-gray-800"
                   id="startDate"
                   type="date"
                   value={project.start_date}
@@ -279,7 +347,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
               <div className="space-y-2">
                 <Label htmlFor="dueDate">Due Date</Label>
                 <Input
-                 className="border-gray-800"
+                  className="border-gray-800"
                   id="dueDate"
                   type="date"
                   value={project.due_date}
@@ -318,7 +386,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
                         <div className="space-y-2">
                           <Label htmlFor={`phase-${phaseIndex}-name`}>Phase Name</Label>
                           <Input
-                           className="border-gray-800"
+                            className="border-gray-800"
                             id={`phase-${phaseIndex}-name`}
                             value={phase.name}
                             onChange={(e) => handlePhaseChange(phaseIndex, "name", e.target.value)}
@@ -330,7 +398,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
                         <div className="space-y-2">
                           <Label htmlFor={`phase-${phaseIndex}-status`}>Status</Label>
                           <Select
-                          
+
                             value={phase.status}
                             onValueChange={(value) => handlePhaseChange(phaseIndex, "status", value)}
                           >
@@ -351,7 +419,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
                       <div className="space-y-2">
                         <Label htmlFor={`phase-${phaseIndex}-description`}>Description</Label>
                         <Textarea
-                         className="border-gray-800"
+                          className="border-gray-800"
                           id={`phase-${phaseIndex}-description`}
                           value={phase.description}
                           onChange={(e) => handlePhaseChange(phaseIndex, "description", e.target.value)}
@@ -364,7 +432,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
                         <div className="space-y-2">
                           <Label htmlFor={`phase-${phaseIndex}-completedDate`}>Completion Date</Label>
                           <Input
-                           className="border-gray-800"
+                            className="border-gray-800"
                             id={`phase-${phaseIndex}-completedDate`}
                             type="date"
                             value={phase.completed_date || ""}
@@ -408,7 +476,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
                                   <div className="space-y-2">
                                     <Label htmlFor={`deliverable-${phaseIndex}-${deliverableIndex}-name`}>Name</Label>
                                     <Input
-                                     className="border-gray-800"
+                                      className="border-gray-800"
                                       id={`deliverable-${phaseIndex}-${deliverableIndex}-name`}
                                       value={deliverable.name}
                                       onChange={(e) =>
@@ -422,7 +490,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
                                   <div className="space-y-2 ">
                                     <Label htmlFor={`deliverable-${phaseIndex}-${deliverableIndex}-type`}>Type</Label>
                                     <Select
-                                    
+
                                       value={deliverable.type}
                                       onValueChange={(value) =>
                                         handleDeliverableChange(phaseIndex, deliverableIndex, "type", value)
@@ -450,7 +518,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
                                     URL <ExternalLink className="h-3 w-3" />
                                   </Label>
                                   <Input
-                                   className="border-gray-800"
+                                    className="border-gray-800"
                                     id={`deliverable-${phaseIndex}-${deliverableIndex}-url`}
                                     value={deliverable.url || ""}
                                     onChange={(e) =>
@@ -465,7 +533,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
                                     Description (Optional)
                                   </Label>
                                   <Textarea
-                                   className="border-gray-800"
+                                    className="border-gray-800"
                                     id={`deliverable-${phaseIndex}-${deliverableIndex}-description`}
                                     value={deliverable.description || ""}
                                     onChange={(e) =>
@@ -487,7 +555,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
                       </div>
 
                       <div className="flex justify-end">
-                        <Button  type="button" variant="destructive" size="sm" onClick={() => removePhase(phaseIndex)}>
+                        <Button type="button" variant="destructive" size="sm" onClick={() => removePhase(phaseIndex)}>
                           <Trash2 className="h-4 w-4 mr-1" /> Remove Phase
                         </Button>
                       </div>
@@ -504,7 +572,7 @@ export function ProjectForm({ project: initialProject, onSave }: ProjectFormProp
             )}
 
             <div className="mt-4">
-              <Button  className="border-gray-800 text-black" type="button" variant="outline" onClick={addPhase}>
+              <Button className="border-gray-800 text-black" type="button" variant="outline" onClick={addPhase}>
                 <Plus className="h-4 w-4 mr-1" /> Add Phase
               </Button>
             </div>

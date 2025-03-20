@@ -27,7 +27,7 @@ export default function ClientsPage() {
         // For each client, fetch their project count
         const clientsWithProjects = await Promise.all(
           clientsData.map(async (client) => {
-            const { count, error } = await supabase
+            const { count } = await supabase
               .from("projects")
               .select("*", { count: "exact", head: true })
               .eq("client_id", client.id)
@@ -56,19 +56,7 @@ export default function ClientsPage() {
     loadClients()
   }, [supabase, toast])
 
-  // Function to get client status color - we'll assume all database clients are active
-  const getClientStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-500/20 text-green-400"
-      case "pending":
-        return "bg-yellow-500/20 text-yellow-400"
-      case "inactive":
-        return "bg-gray-500/20 text-gray-400"
-      default:
-        return "bg-gray-500/20 text-gray-400"
-    }
-  }
+
 
   // Function to format date
   const formatDate = (dateString: string) => {

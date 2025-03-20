@@ -13,7 +13,7 @@ interface ProjectPageProps {
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const project = await getProjectById(params.id)
-
+console.log(project);
   if (!project) {
     notFound()
   }
@@ -51,18 +51,18 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     <div className="container mx-auto text-white py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">{project.name}</h1>
+          <h1 className="text-4xl font-bold capitalize mb-4">{project.name}</h1>
           <p className="text-xl text-gray-400 mb-6">{project.description}</p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="bg-gray-900/50 p-4 rounded-lg">
               <div className="text-sm text-gray-400 mb-1">Start Date</div>
-              <div className="text-xl font-semibold">{formatDate(project.startDate)}</div>
+              <div className="text-xl font-semibold">{project.start_date}</div>
             </div>
 
             <div className="bg-gray-900/50 p-4 rounded-lg">
               <div className="text-sm text-gray-400 mb-1">Due Date</div>
-              <div className="text-xl font-semibold">{formatDate(project.dueDate)}</div>
+              <div className="text-xl font-semibold">{formatDate(project.due_date)}</div>
             </div>
 
             <div className="bg-gray-900/50 p-4 rounded-lg">
@@ -95,7 +95,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <h3 className="text-xl font-semibold">{phase.name}</h3>
+                        <h3 className="text-xl capitalize font-semibold">{phase.name}</h3>
                         <p className="text-gray-400 mt-1">{phase.description}</p>
                       </div>
                       <Badge
@@ -134,16 +134,17 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                               </div>
 
                               {deliverable.url && (
-                                <a
-                                  href={deliverable.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm"
-                                >
-                                  <span>View</span>
-                                  <ExternalLink className="h-3 w-3" />
-                                </a>
-                              )}
+  <a
+    href={deliverable.url.startsWith("http") ? deliverable.url : `https://${deliverable.url}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm transition-colors"
+  >
+    <span>View</span>
+    <ExternalLink className="h-3 w-3" />
+  </a>
+)}
+
                             </div>
                           ))}
                         </div>

@@ -1,7 +1,7 @@
 "use server"
 
 import type { Project, ProjectPhase, Deliverable, DbProject, DbProjectPhase, DbDeliverable } from "./../../../types/project"
-import { createServerAdminClient } from "@/utils/supabase/server"
+import { createServerAdminClient } from "@/app/utils/supabase/server"
 import { revalidatePath } from "next/cache"
 
 // Helper function to convert database project to frontend project
@@ -138,165 +138,200 @@ async function findProjectByNameAndClient(name: string, client: string): Promise
 
 export async function getProjects(): Promise<Project[]> {
   try {
-    const supabase = createServerAdminClient()
+    const supabase = createServerAdminClient();
 
-    // Fetch all projects
+    // Fetch projects, ensuring user_id is included
     const { data: dbProjects, error } = await supabase
       .from("projects")
-      .select("*")
-      .order("updated_at", { ascending: false })
+      .select("id, name, description, client, user_id, type, status, start_date, due_date, progress, created_at, updated_at")
+      .order("updated_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching projects:", error)
-      throw new Error("Failed to fetch projects")
+      console.error("Error fetching projects:", error);
+      throw new Error("Failed to fetch projects");
     }
 
-    // Map each project to include its phases and deliverables
-    const projects = await Promise.all(dbProjects.map((dbProject) => mapDbProjectToProject(dbProject)))
+    // Transform projects to ensure client object contains user_id
+    const projects = await Promise.all(
+      dbProjects.map(async (dbProject) => {
+        return {
+          ...dbProject,
+          client: typeof dbProject.client === "string"
+            ? { name: dbProject.client, user_id: dbProject.user_id }
+            : dbProject.client,
+        };
+      })
+    );
 
-    return projects
+    console.log("Fetched projects:", projects);
+    return projects;
   } catch (error) {
-    console.error("Error in getProjects:", error)
-    throw error
+    console.error("Error in getProjects:", error);
+    throw error;
   }
 }
 
+
 export async function getProjectById(id: string): Promise<Project | null> {
   try {
-    const supabase = createServerAdminClient()
+    const supabase = createServerAdminClient();
 
-    // Fetch the project
-    const { data: dbProject, error } = await supabase.from("projects").select("*").eq("id", id).single()
+    // Fetch the project including user_id
+    const { data: dbProject, error } = await supabase
+      .from("projects")
+      .select("*") // Ensure all fields are selected
+      .eq("id", id)
+      .single();
 
     if (error) {
       if (error.code === "PGRST116") {
-        // Record not found
-        return null
+        return null;
       }
-      console.error("Error fetching project:", error)
-      throw new Error("Failed to fetch project")
+      console.error("Error fetching project:", error);
+      throw new Error("Failed to fetch project");
     }
 
     if (!dbProject) {
-      return null
+      return null;
     }
 
-    // Map the project with its phases and deliverables
-    return await mapDbProjectToProject(dbProject)
+    // Ensure the client field matches the structure used when creating a project
+    const project = await mapDbProjectToProject(dbProject);
+
+    return {
+      ...project,
+      client: {
+        name: dbProject.client, // Ensure 'client' is an object instead of just a string
+        user_id: dbProject.user_id, // Attach user_id inside the client object
+      },
+    };
   } catch (error) {
-    console.error("Error in getProjectById:", error)
-    throw error
+    console.error("Error in getProjectById:", error);
+    throw error;
   }
 }
 
 export async function saveProject(project: Project): Promise<Project> {
   try {
-    console.log("Saving project:", JSON.stringify(project, null, 2))
+    console.log("Saving project:", JSON.stringify(project, null, 2));
 
-    const supabase = createServerAdminClient()
+    const supabase = createServerAdminClient();
 
     // Normalize project data to handle both camelCase and snake_case fields
     const normalizedProject = {
       ...project,
       start_date: project.start_date || project.startDate || null,
       due_date: project.due_date || project.dueDate || null,
-    }
+      user_id: project.user_id || project.client?.user_id || null, // Ensure user_id is extracted
+    };
 
     // Prepare project data
     const projectData: Partial<DbProject> = {
       name: normalizedProject.name,
       description: normalizedProject.description || null,
-      client: normalizedProject.client || null,
+      client: normalizedProject.client?.name || null, // Store only client name
+      user_id: normalizedProject.user_id, // Ensure user_id is passed at top-level
       type: normalizedProject.type || null,
       status: normalizedProject.status,
       start_date: normalizedProject.start_date || null,
       due_date: normalizedProject.due_date || null,
       progress: normalizedProject.progress,
-    }
+    };
 
-    let dbProjectId: string
-    let isNewProject = false
+    console.log("Final project data before DB operation:", JSON.stringify(projectData, null, 2));
+
+    let dbProjectId: string;
+    let isNewProject = false;
 
     // Check if we're editing an existing project
     if (normalizedProject.id && isValidUUID(normalizedProject.id)) {
-      // We have a valid UUID, try to update the existing project
-      dbProjectId = normalizedProject.id
-      console.log("Updating existing project with ID:", dbProjectId)
+      dbProjectId = normalizedProject.id;
+      console.log("Updating existing project with ID:", dbProjectId);
 
       // Check if the project exists
       const { data: existingProject, error: checkError } = await supabase
         .from("projects")
         .select("id")
         .eq("id", dbProjectId)
-        .single()
+        .single();
 
       if (checkError || !existingProject) {
-        // Project doesn't exist, create a new one
-        isNewProject = true
-        console.log("Project not found, creating new project")
+        isNewProject = true;
+        console.log("Project not found, creating new project");
 
-        const { data: newProject, error: insertError } = await supabase.from("projects").insert(projectData).select()
+        const { data: newProject, error: insertError } = await supabase
+          .from("projects")
+          .insert(projectData)
+          .select();
 
         if (insertError) {
-          console.error("Project insert error:", insertError)
-          throw new Error(`Project insert error: ${safeStringifyError(insertError)}`)
+          console.error("Project insert error:", insertError);
+          throw new Error(`Project insert error: ${safeStringifyError(insertError)}`);
         }
 
-        dbProjectId = newProject[0].id
+        dbProjectId = newProject[0].id;
       } else {
         // Update the existing project
-        const { error: updateError } = await supabase.from("projects").update(projectData).eq("id", dbProjectId)
+        const { error: updateError } = await supabase
+          .from("projects")
+          .update(projectData)
+          .eq("id", dbProjectId);
 
         if (updateError) {
-          console.error("Project update error:", updateError)
-          throw new Error(`Project update error: ${safeStringifyError(updateError)}`)
+          console.error("Project update error:", updateError);
+          throw new Error(`Project update error: ${safeStringifyError(updateError)}`);
         }
       }
     } else {
       // No valid UUID, try to find by name and client
-      const existingProject = await findProjectByNameAndClient(normalizedProject.name, normalizedProject.client)
+      const existingProject = await findProjectByNameAndClient(normalizedProject.name, normalizedProject.client?.name);
 
       if (existingProject) {
-        // Update existing project
-        dbProjectId = existingProject.id
-        console.log("Updating existing project (found by name/client) with ID:", dbProjectId)
+        dbProjectId = existingProject.id;
+        console.log("Updating existing project (found by name/client) with ID:", dbProjectId);
 
-        const { error: updateError } = await supabase.from("projects").update(projectData).eq("id", dbProjectId)
+        const { error: updateError } = await supabase
+          .from("projects")
+          .update(projectData)
+          .eq("id", dbProjectId);
 
         if (updateError) {
-          console.error("Project update error:", updateError)
-          throw new Error(`Project update error: ${safeStringifyError(updateError)}`)
+          console.error("Project update error:", updateError);
+          throw new Error(`Project update error: ${safeStringifyError(updateError)}`);
         }
       } else {
-        // Create new project, let Supabase generate the UUID
-        isNewProject = true
-        console.log("Creating new project")
+        // Create new project
+        isNewProject = true;
+        console.log("Creating new project");
 
-        const { data: newProject, error: insertError } = await supabase.from("projects").insert(projectData).select()
+        const { data: newProject, error: insertError } = await supabase
+          .from("projects")
+          .insert(projectData)
+          .select();
 
         if (insertError) {
-          console.error("Project insert error:", insertError)
-          throw new Error(`Project insert error: ${safeStringifyError(insertError)}`)
+          console.error("Project insert error:", insertError);
+          throw new Error(`Project insert error: ${safeStringifyError(insertError)}`);
         }
 
-        dbProjectId = newProject[0].id
+        dbProjectId = newProject[0].id;
       }
     }
 
     // If it's not a new project, delete existing phases
     if (!isNewProject) {
-      console.log("Deleting existing phases for project:", dbProjectId)
-      const { error: deleteError } = await supabase.from("project_phases").delete().eq("project_id", dbProjectId)
+      console.log("Deleting existing phases for project:", dbProjectId);
+      const { error: deleteError } = await supabase.from("project_phases").delete().eq("project_id", dbProjectId);
 
       if (deleteError) {
-        console.error("Error deleting existing phases:", deleteError)
-        throw new Error(`Error deleting existing phases: ${safeStringifyError(deleteError)}`)
+        console.error("Error deleting existing phases:", deleteError);
+        throw new Error(`Error deleting existing phases: ${safeStringifyError(deleteError)}`);
       }
     }
 
     // Process each phase
     for (const phase of normalizedProject.phases) {
-      console.log("Processing phase:", phase.name)
+      console.log("Processing phase:", phase.name);
 
       const phaseData: Partial<DbProjectPhase> = {
         project_id: dbProjectId,
@@ -305,21 +340,24 @@ export async function saveProject(project: Project): Promise<Project> {
         description: phase.description || null,
         completed_date: phase.completed_date || null,
         order_index: phase.order_index,
-      }
+      };
 
-      // Create new phase, let Supabase generate the UUID
-      const { data: newPhase, error: insertError } = await supabase.from("project_phases").insert(phaseData).select()
+      // Create new phase
+      const { data: newPhase, error: insertError } = await supabase
+        .from("project_phases")
+        .insert(phaseData)
+        .select();
 
       if (insertError) {
-        console.error("Phase insert error:", insertError)
-        throw new Error(`Phase insert error: ${safeStringifyError(insertError)}`)
+        console.error("Phase insert error:", insertError);
+        throw new Error(`Phase insert error: ${safeStringifyError(insertError)}`);
       }
 
-      const dbPhaseId = newPhase[0].id
+      const dbPhaseId = newPhase[0].id;
 
       // Process each deliverable
       for (const deliverable of phase.deliverables) {
-        console.log("Processing deliverable:", deliverable.name)
+        console.log("Processing deliverable:", deliverable.name);
 
         const deliverableData: Partial<DbDeliverable> = {
           phase_id: dbPhaseId,
@@ -327,32 +365,33 @@ export async function saveProject(project: Project): Promise<Project> {
           type: deliverable.type,
           url: deliverable.url || null,
           description: deliverable.description || null,
-        }
+        };
 
-        // Create new deliverable, let Supabase generate the UUID
-        const { error: insertError } = await supabase.from("deliverables").insert(deliverableData)
+        // Create new deliverable
+        const { error: insertError } = await supabase.from("deliverables").insert(deliverableData);
 
         if (insertError) {
-          console.error("Deliverable insert error:", insertError)
-          throw new Error(`Deliverable insert error: ${safeStringifyError(insertError)}`)
+          console.error("Deliverable insert error:", insertError);
+          throw new Error(`Deliverable insert error: ${safeStringifyError(insertError)}`);
         }
       }
     }
 
     // Revalidate paths
-    revalidatePath("/dashboard/projects")
-    revalidatePath(`/dashboard/projects/${dbProjectId}`)
-    revalidatePath(`/projects/${dbProjectId}`)
+    revalidatePath("/dashboard/projects");
+    revalidatePath(`/dashboard/projects/${dbProjectId}`);
+    revalidatePath(`/projects/${dbProjectId}`);
 
-    console.log("Project saved successfully:", dbProjectId)
+    console.log("Project saved successfully:", dbProjectId);
 
     // Return the updated project
-    return (await getProjectById(dbProjectId)) as Project
+    return (await getProjectById(dbProjectId)) as Project;
   } catch (error) {
-    console.error("Error in saveProject:", error)
-    throw new Error(`Failed to save project: ${safeStringifyError(error)}`)
+    console.error("Error in saveProject:", error);
+    throw new Error(`Failed to save project: ${safeStringifyError(error)}`);
   }
 }
+
 
 export async function deleteProject(id: string): Promise<{ success: boolean }> {
   try {

@@ -46,7 +46,7 @@ export default async function ProjectsPage() {
                 projects.map((project) => (
                   <tr className="border-t border-gray-700 hover:bg-[#1e1e1e]" key={project.id}>
                     <td className="px-4 py-3 font-medium">{project.name}</td>
-                    <td className="px-4 py-3">{project.client}</td>
+                    <td className="px-4 py-3">{project.client.name}</td>
                     <td className="px-4 py-3">{project.type}</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-1 rounded text-xs font-semibold ${project.status === "Completed" ? "bg-green-600" :
@@ -64,7 +64,7 @@ export default async function ProjectsPage() {
                         <span className="text-xs">{project.progress}%</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3">{new Date(project.dueDate).toLocaleDateString()}</td>
+                    <td className="px-4 py-3">{project.due_date}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end">
                         <Link href={`/projects/${project.id}`} className="text-white px-2 py-1 rounded flex items-center">

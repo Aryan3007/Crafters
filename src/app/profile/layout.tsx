@@ -7,7 +7,7 @@ import { useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { Bell, Edit, LogOut, User, FileText, Shield } from "lucide-react"
+import { Bell, LogOut, User, FileText, Shield, Menu, X } from "lucide-react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
@@ -16,6 +16,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [userRole, setUserRole] = useState<"user" | "client" | "admin">("user")
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const supabase = createClientComponentClient()
 
@@ -64,6 +65,11 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     getUser()
   }, [router, supabase.auth, supabase])
 
+  // Close sidebar when route changes on mobile
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [pathname])
+
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut()
 
@@ -97,28 +103,39 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
       <header className="bg-[#0a0a0a] border-b border-gray-800 fixed top-0 left-0 right-0 z-10">
-        <div className=" px-4 sm:px-6 lg:px-8 py-4">
+        <div className="px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                  <path d="M2 17l10 5 10-5"></path>
-                  <path d="M2 12l10 5 10-5"></path>
-                </svg>
-              </div>
-              <span className="text-xl font-bold text-white">Creative Studio</span>
-            </Link>
+            <div className="flex items-center gap-2">
+              {/* Mobile menu toggle */}
+              <button
+                className="md:hidden text-gray-400 hover:text-white mr-2"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                aria-label="Toggle sidebar"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+
+              <Link href="/" className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                  </svg>
+                </div>
+                <span className="text-xl font-bold text-white">Creative Studio</span>
+              </Link>
+            </div>
 
             <div className="flex items-center gap-6">
               <button className="relative text-gray-400 hover:text-white transition-colors">
@@ -138,7 +155,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                     className="object-cover"
                   />
                 </div>
-                <div>
+                <div className="hidden sm:block">
                   <p className="text-sm font-medium">{displayName}</p>
                   <p className="text-xs text-gray-400 capitalize">{userRole}</p>
                 </div>
@@ -149,8 +166,28 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
       </header>
 
       <div className="flex pt-[73px] min-h-[calc(100vh-73px)]">
+        {/* Overlay for mobile when sidebar is open */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )}
+
         {/* Sidebar */}
-        <div className="w-64 bg-[#0a0a0a] border-r border-gray-800 p-4 flex flex-col fixed left-0 top-[73px] bottom-0 overflow-y-auto">
+        <div
+          className={`w-64 bg-[#0a0a0a] border-r border-gray-800 p-4 flex flex-col fixed left-0 top-[73px] bottom-0 overflow-y-auto z-30 transition-transform duration-300 ease-in-out md:translate-x-0 ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          {/* Close button for mobile */}
+          <button
+            className="md:hidden absolute top-4 right-4 text-gray-400 hover:text-white"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <X className="w-5 h-5" />
+          </button>
+
           <div className="flex flex-col items-center text-center mb-6">
             <div className="relative w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-[#c4ff00]">
               <Image src={userAvatar || "/placeholder.svg"} alt={displayName} fill className="object-cover" />
@@ -160,14 +197,12 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             <p className="text-xs bg-[#c4ff00] text-black px-2 py-0.5 rounded-full mt-2 capitalize">{userRole}</p>
 
             <div className="mt-4 flex gap-2">
-              <button className="bg-[#1e1e1e] hover:bg-[#252525] rounded-lg p-2 text-gray-400 hover:text-white transition-colors">
-                <Edit className="w-5 h-5" />
-              </button>
               <button
                 onClick={handleSignOut}
-                className="bg-[#1e1e1e] hover:bg-[#252525] rounded-lg p-2 text-gray-400 hover:text-white transition-colors"
+                className="bg-[#1e1e1e] flex justify-center items-center gap-2 hover:bg-[#252525] rounded-lg p-2 text-red-500 hover:text-red-700 transition-colors"
               >
                 <LogOut className="w-5 h-5" />
+                Sign Out
               </button>
             </div>
           </div>
@@ -197,7 +232,6 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
               <span>Projects</span>
             </Link>
 
-           
             <Link
               href="/profile/settings"
               className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${
@@ -228,7 +262,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 ml-64 p-6 overflow-y-auto">{children}</div>
+        <div className="flex-1 md:ml-64 p-6 overflow-y-auto">{children}</div>
       </div>
     </div>
   )

@@ -10,12 +10,19 @@ import {
   AlertTriangle,
   CheckSquare,
   Briefcase,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-
+import { getClientProjects } from "@/app/actions/client-actions"
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 // Define project status types
-type ProjectStatus = "planning" | "design" | "development" | "review" | "completed"
+type ProjectStatus = "planning" | "design" | "development" | "review" | "completed" | "Not Started" | "In Progress"
 
 // Define project stage interface
 interface ProjectStage {
@@ -24,7 +31,7 @@ interface ProjectStage {
   deliverables?: {
     name: string
     link: string
-    type: "figma" | "github" | "preview" | "document"
+    type: "figma" | "github" | "preview" | "document" | "Document"
   }[]
   completedAt?: string
   notes?: string
@@ -32,7 +39,7 @@ interface ProjectStage {
 
 // Define project interface
 interface Project {
-  id: number
+  id: string
   title: string
   description: string
   status: ProjectStatus
@@ -47,12 +54,49 @@ interface Project {
   }[]
 }
 
+// Define API response interface based on the screenshot
+interface ApiProject {
+  client: string
+  created_at: string
+  description: string
+  due_date: string
+  id: string
+  name: string
+  phases: {
+    created_at: string
+    deliverables: {
+      created_at: string
+      description: string
+      id: string
+      name: string
+      phase_id: string
+      type: string
+      updated_at: string
+      url: string
+    }[]
+    description: string
+    id: string
+    name: string
+    order_index: number
+    project_id: string
+    status: string
+    updated_at: string
+  }[]
+  progress: number
+  start_date: string
+  status: string
+  type: string
+  updated_at: string
+}
+
 export default function ProjectsPage() {
   const [userRole, setUserRole] = useState<"client" | "admin">("client")
+  const [userId, setuserId] = useState("")
   const [projects, setProjects] = useState<Project[]>([])
-  const [selectedProject, setSelectedProject] = useState<number | null>(null)
+  const [selectedProject, setSelectedProject] = useState<string | null>(null)
   const supabase = createClientComponentClient()
-
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
   useEffect(() => {
     async function getUser() {
       // Get the user profile data
@@ -62,8 +106,9 @@ export default function ProjectsPage() {
         console.error("Error fetching user:", userError)
         return
       }
+      setuserId(userData.user.id)
 
-      // In a real application, you would fetch the user's role from your database
+      // Determine user role
       if (userData.user.email?.endsWith("@creativestudio.com")) {
         setUserRole("admin")
       } else {
@@ -72,306 +117,75 @@ export default function ProjectsPage() {
     }
 
     getUser()
+  }, [supabase.auth]) // Only run on component mount
 
-    // This would normally fetch from an API
-    const projectsData = [
-      {
-        id: 1,
-        title: "E-Commerce Website",
-        description:
-          "A fully responsive e-commerce platform with advanced filtering, cart functionality, and secure payment processing.",
-        status: "development" as ProjectStatus,
-        progress: 65,
-        startDate: "2023-09-15",
-        dueDate: "2023-11-30",
-        stages: [
-          {
-            name: "Project Planning",
-            status: "completed" as "completed" | "in-progress" | "pending",
-            completedAt: "2023-09-20",
-            deliverables: [
-              {
-                name: "Project Brief",
-                link: "https://docs.google.com/document/d/123",
-                type: "document" as "figma" | "github" | "preview" | "document",
-              },
-              {
-                name: "Timeline",
-                link: "https://docs.google.com/spreadsheets/d/456",
-                type: "document" as "figma" | "github" | "preview" | "document",
-              },
-            ],
-            notes: "All requirements gathered and project scope defined.",
-          },
-          {
-            name: "UI/UX Design",
-            status: "completed" as "completed" | "in-progress" | "pending",
-            completedAt: "2023-10-15",
-            deliverables: [
-              {
-                name: "Wireframes",
-                link: "https://figma.com/file/abc123",
-                type: "figma" as "figma" | "github" | "preview" | "document",
-              },
-              {
-                name: "UI Design",
-                link: "https://figma.com/file/def456",
-                type: "figma" as "figma" | "github" | "preview" | "document",
-              },
-            ],
-            notes: "Design approved after 2 revision rounds.",
-          },
-          {
-            name: "Frontend Development",
-            status: "in-progress" as "completed" | "in-progress" | "pending",
-            deliverables: [
-              {
-                name: "Development Preview",
-                link: "https://dev-preview.example.com",
-                type: "preview" as "figma" | "github" | "preview" | "document",
-              },
-              {
-                name: "GitHub Repository",
-                link: "https://github.com/example/ecommerce-frontend",
-                type: "github" as "figma" | "github" | "preview" | "document",
-              },
-            ],
-            notes: "Homepage and product listing pages completed. Working on checkout flow.",
-          },
-          {
-            name: "Backend Development",
-            status: "in-progress" as "completed" | "in-progress" | "pending",
-            deliverables: [
-              {
-                name: "API Documentation",
-                link: "https://api-docs.example.com",
-                type: "document" as "figma" | "github" | "preview" | "document",
-              },
-            ],
-            notes: "User authentication and product API endpoints completed.",
-          },
-          {
-            name: "Testing & QA",
-            status: "pending" as "completed" | "in-progress" | "pending",
-            notes: "Will begin once development reaches 80% completion.",
-          },
-          {
-            name: "Deployment",
-            status: "pending" as "completed" | "in-progress" | "pending",
-            notes: "Scheduled for November 25.",
-          },
-        ],
-        teamMembers: [
-          {
-            name: "Alex Johnson",
-            role: "Project Manager",
-            avatar: "/placeholder.svg?height=40&width=40",
-          },
-          {
-            name: "Sarah Lee",
-            role: "UI/UX Designer",
-            avatar: "/placeholder.svg?height=40&width=40",
-          },
-          {
-            name: "Michael Chen",
-            role: "Frontend Developer",
-            avatar: "/placeholder.svg?height=40&width=40",
-          },
-          {
-            name: "Jessica Taylor",
-            role: "Backend Developer",
-            avatar: "/placeholder.svg?height=40&width=40",
-          },
-        ],
-      },
-      {
-        id: 2,
-        title: "Corporate Branding",
-        description:
-          "Complete brand identity redesign including logo, color palette, typography, and brand guidelines.",
-        status: "review" as ProjectStatus,
-        progress: 90,
-        startDate: "2023-08-10",
-        dueDate: "2023-10-30",
-        stages: [
-          {
-            name: "Discovery & Research",
-            status: "completed" as "completed" | "in-progress" | "pending",
-            completedAt: "2023-08-20",
-            deliverables: [
-              {
-                name: "Research Document",
-                link: "https://docs.google.com/document/d/789",
-                type: "document" as "figma" | "github" | "preview" | "document",
-              },
-            ],
-            notes: "Completed market research and competitor analysis.",
-          },
-          {
-            name: "Logo Design",
-            status: "completed" as "completed" | "in-progress" | "pending",
-            completedAt: "2023-09-15",
-            deliverables: [
-              {
-                name: "Logo Concepts",
-                link: "https://figma.com/file/ghi789",
-                type: "figma" as "figma" | "github" | "preview" | "document",
-              },
-              {
-                name: "Final Logo",
-                link: "https://figma.com/file/jkl012",
-                type: "figma" as "figma" | "github" | "preview" | "document",
-              },
-            ],
-            notes: "Final logo approved after 3 revision rounds.",
-          },
-          {
-            name: "Brand Guidelines",
-            status: "completed" as "completed" | "in-progress" | "pending",
-            completedAt: "2023-10-10",
-            deliverables: [
-              {
-                name: "Brand Guidelines Draft",
-                link: "https://figma.com/file/mno345",
-                type: "figma" as "figma" | "github" | "preview" | "document",
-              },
-            ],
-            notes: "Typography, color palette, and usage guidelines defined.",
-          },
-          {
-            name: "Marketing Materials",
-            status: "in-progress" as "completed" | "in-progress" | "pending",
-            deliverables: [
-              {
-                name: "Business Cards",
-                link: "https://figma.com/file/pqr678",
-                type: "figma" as "figma" | "github" | "preview" | "document",
-              },
-              {
-                name: "Letterhead",
-                link: "https://figma.com/file/stu901",
-                type: "figma" as "figma" | "github" | "preview" | "document",
-              },
-            ],
-            notes: "Business cards and letterhead designs in final review.",
-          },
-          {
-            name: "Brand Guide Delivery",
-            status: "pending" as "completed" | "in-progress" | "pending",
-            notes: "Final package to be delivered by October 30.",
-          },
-        ],
-        teamMembers: [
-          {
-            name: "Emily Wilson",
-            role: "Brand Strategist",
-            avatar: "/placeholder.svg?height=40&width=40",
-          },
-          {
-            name: "David Garcia",
-            role: "Graphic Designer",
-            avatar: "/placeholder.svg?height=40&width=40",
-          },
-          {
-            name: "Olivia Martinez",
-            role: "Creative Director",
-            avatar: "/placeholder.svg?height=40&width=40",
-          },
-        ],
-      },
-      {
-        id: 3,
-        title: "Mobile App Development",
-        description:
-          "iOS and Android fitness tracking application with workout plans, progress tracking, and social features.",
-        status: "planning" as ProjectStatus,
-        progress: 15,
-        startDate: "2023-10-01",
-        dueDate: "2024-02-28",
-        stages: [
-          {
-            name: "Requirements Gathering",
-            status: "completed" as "completed" | "in-progress" | "pending",
-            completedAt: "2023-10-15",
-            deliverables: [
-              {
-                name: "Requirements Document",
-                link: "https://docs.google.com/document/d/246",
-                type: "document" as "figma" | "github" | "preview" | "document",
-              },
-            ],
-            notes: "All functional and non-functional requirements documented.",
-          },
-          {
-            name: "UI/UX Design",
-            status: "in-progress" as "completed" | "in-progress" | "pending",
-            deliverables: [
-              {
-                name: "Wireframes",
-                link: "https://figma.com/file/vwx135",
-                type: "figma" as "figma" | "github" | "preview" | "document",
-              },
-            ],
-            notes: "Working on initial wireframes and user flow.",
-          },
-          {
-            name: "Frontend Development",
-            status: "pending" as "completed" | "in-progress" | "pending",
-            notes: "Will begin after design approval.",
-          },
-          {
-            name: "Backend Development",
-            status: "pending" as "completed" | "in-progress" | "pending",
-            notes: "API planning in progress.",
-          },
-          {
-            name: "Testing",
-            status: "pending" as "completed" | "in-progress" | "pending",
-            notes: "Test plan being developed.",
-          },
-          {
-            name: "Deployment",
-            status: "pending" as "completed" | "in-progress" | "pending",
-            notes: "App store submission planned for February 2024.",
-          },
-        ],
-        teamMembers: [
-          {
-            name: "Ryan Thompson",
-            role: "Project Manager",
-            avatar: "/placeholder.svg?height=40&width=40",
-          },
-          {
-            name: "Sophia Kim",
-            role: "UI/UX Designer",
-            avatar: "/placeholder.svg?height=40&width=40",
-          },
-          {
-            name: "James Wilson",
-            role: "iOS Developer",
-            avatar: "/placeholder.svg?height=40&width=40",
-          },
-          {
-            name: "Aiden Chen",
-            role: "Android Developer",
-            avatar: "/placeholder.svg?height=40&width=40",
-          },
-          {
-            name: "Emma Davis",
-            role: "Backend Developer",
-            avatar: "/placeholder.svg?height=40&width=40",
-          },
-        ],
-      },
-    ]
+  useEffect(() => {
+    async function fetchProjects() {
+      if (!userId) return // Prevent fetching if userId is not yet set
+      try {
+        const apiProjects = await getClientProjects(userId)
+        console.log("Fetched projects:", apiProjects)
 
-    setProjects(projectsData)
+        // Transform API projects to the format expected by the UI
+        const transformedProjects = apiProjects.map((apiProject: ApiProject) => {
+          // Map phases to stages
+          const stages = apiProject.phases.map((phase) => {
+            // Map deliverables
+            const deliverables =
+              phase.deliverables?.map((deliverable) => ({
+                name: deliverable.name,
+                link: deliverable.url,
+                type: deliverable.type.toLowerCase() as "figma" | "github" | "preview" | "document" | "Document",
+              })) || []
 
-    // Set the first project as selected by default when projects load
-    if (projectsData.length > 0 && selectedProject === null) {
-      setSelectedProject(projectsData[0].id)
+            // Determine stage status
+            let status: "completed" | "in-progress" | "pending" = "pending"
+            if (phase.status === "Completed") {
+              status = "completed"
+            } else if (phase.status === "In Progress") {
+              status = "in-progress"
+            }
+
+            return {
+              name: phase.name,
+              status,
+              deliverables,
+              completedAt: status === "completed" ? phase.updated_at : undefined,
+              notes: phase.description,
+            }
+          })
+
+          // Map project status to UI status
+          let uiStatus: ProjectStatus = "planning"
+          if (apiProject.status === "Not Started") {
+            uiStatus = "planning"
+          } else if (apiProject.status === "In Progress") {
+            uiStatus = "development"
+          } else if (apiProject.status === "Completed") {
+            uiStatus = "completed"
+          }
+
+          return {
+            id: apiProject.id,
+            title: apiProject.name,
+            description: apiProject.description,
+            status: uiStatus,
+            progress: apiProject.progress || 0,
+            startDate: apiProject.start_date,
+            dueDate: apiProject.due_date,
+            stages,
+            teamMembers: [], // No team members in the API response
+          }
+        })
+
+        setProjects(transformedProjects)
+      } catch (error) {
+        console.error("Error fetching projects:", error)
+      }
     }
-  }, [supabase.auth, selectedProject])
+
+    fetchProjects()
+  }, [userId]) // Re-run when userId changes
 
   // Function to get status badge color
   const getStatusColor = (status: string) => {
@@ -400,6 +214,10 @@ export default function ProjectsPage() {
         return <AlertTriangle className="w-5 h-5 text-orange-400" />
       case "completed":
         return <CheckSquare className="w-5 h-5 text-green-400" />
+      case "Not Started":
+        return <Clock className="w-5 h-5 text-yellow-400" />
+      case "In Progress":
+        return <FileText className="w-5 h-5 text-blue-400" />
       default:
         return <Clock className="w-5 h-5 text-gray-400" />
     }
@@ -407,7 +225,7 @@ export default function ProjectsPage() {
 
   // Function to render icon based on deliverable type
   const getDeliverableIcon = (type: string) => {
-    switch (type) {
+    switch (type.toLowerCase()) {
       case "figma":
         return (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="#1ABCFE">
@@ -425,13 +243,20 @@ export default function ProjectsPage() {
         )
       case "preview":
         return <ExternalLink className="w-4 h-4" />
+      case "document":
+      case "Document":
+        return <FileText className="w-4 h-4" />
       default:
         return <FileText className="w-4 h-4" />
     }
   }
 
   // Get the selected project
-  const currentProject = projects.find((p) => p.id === selectedProject) || projects[0]
+  const currentProject = selectedProject
+    ? projects.find((p) => p.id === selectedProject)
+    : projects.length > 0
+      ? projects[0]
+      : null
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
@@ -460,39 +285,78 @@ export default function ProjectsPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.map((project) => (
-            <div
-              key={project.id}
-              className={`bg-[#1e1e1e] rounded-lg p-4 hover:bg-[#252525] transition-colors cursor-pointer border-2 ${selectedProject === project.id ? "border-[#c4ff00]" : "border-transparent"}`}
-              onClick={() => setSelectedProject(project.id)}
-            >
-              <div className="flex justify-between items-start mb-3">
-                <h4 className="font-medium">{project.title}</h4>
-                <div className="flex items-center gap-2">
-                  {getProjectStatusIcon(project.status)}
-                  <span className="text-xs px-2 py-1 rounded-full capitalize bg-gray-800">{project.status}</span>
-                </div>
-              </div>
+        <div className="relative">
+          {/* Swiper Carousel */}
+          <Swiper
+            modules={[Navigation, Pagination]}
+            spaceBetween={20}
+            slidesPerView={1} // Default for small screens
+            breakpoints={{
+              768: { slidesPerView: 2 }, // 2 projects on medium screens
+              1024: { slidesPerView: 3 }, // 3 projects on large screens
+            }}
+            pagination={{ clickable: true }}
+            navigation={{
+              prevEl: prevRef.current,
+              nextEl: nextRef.current,
+            }}
+            onBeforeInit={(swiper) => {
+              swiper.params.navigation.prevEl = prevRef.current;
+              swiper.params.navigation.nextEl = nextRef.current;
+            }}
+          >
+            {projects.map((project) => (
+              <SwiperSlide key={project.id}>
+                <div
+                  className={`bg-[#1e1e1e] rounded-lg p-4 hover:bg-[#252525] transition-colors cursor-pointer border-2 ${selectedProject === project.id ? "border-[#c4ff00]" : "border-transparent"
+                    }`}
+                  onClick={() => setSelectedProject(project.id)}
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <h4 className="font-medium capitalize">{project.title}</h4>
+                    <div className="flex items-center gap-2">
+                      {getProjectStatusIcon(project.status)}
+                      <span className="text-xs px-2 py-1 rounded-full capitalize bg-gray-800">{project.status}</span>
+                    </div>
+                  </div>
 
-              <p className="text-sm text-gray-400 mb-3 line-clamp-2">{project.description}</p>
+                  <p className="text-sm text-gray-400 mb-3 capitalize line-clamp-2">{project.description}</p>
 
-              <div className="mb-3">
-                <div className="flex justify-between text-xs text-gray-400 mb-1">
-                  <span>Progress</span>
-                  <span>{project.progress}%</span>
-                </div>
-                <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#c4ff00]" style={{ width: `${project.progress}%` }}></div>
-                </div>
-              </div>
+                  <div className="mb-3">
+                    <div className="flex justify-between text-xs text-gray-400 mb-1">
+                      <span>Progress</span>
+                      <span>{project.progress}%</span>
+                    </div>
+                    <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#c4ff00]" style={{ width: `${project.progress}%` }}></div>
+                    </div>
+                  </div>
 
-              <div className="flex items-center text-xs text-gray-400">
-                <Calendar className="w-3 h-3 mr-1" />
-                <span>Due: {new Date(project.dueDate).toLocaleDateString()}</span>
-              </div>
-            </div>
-          ))}
+                  <div className="flex items-center text-xs text-gray-400">
+                    <Calendar className="w-3 h-3 mr-1" />
+                    <span>Due: {new Date(project.dueDate).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          {/* Custom Navigation Buttons */}
+          <button
+            ref={prevRef}
+            className="absolute left-[-40px] top-1/2 transform -translate-y-1/2 z-10 bg-[#c4ff00] text-black p-2 rounded-full hover:bg-gray-700 transition"
+            aria-label="Previous Project"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+
+          <button
+            ref={nextRef}
+            className="absolute right-[-40px] top-1/2 transform -translate-y-1/2 z-10 bg-[#c4ff00] text-black p-2 rounded-full hover:bg-gray-700 transition"
+            aria-label="Next Project"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
         </div>
       </div>
 
@@ -503,10 +367,10 @@ export default function ProjectsPage() {
             <div>
               <div className="flex items-center gap-3 mb-2">
                 {getProjectStatusIcon(currentProject.status)}
-                <h3 className="text-xl font-medium">{currentProject.title}</h3>
+                <h3 className="text-xl capitalize font-medium">{currentProject.title}</h3>
                 <span className="text-xs px-2 py-1 rounded-full capitalize bg-gray-800">{currentProject.status}</span>
               </div>
-              <p className="text-gray-400">{currentProject.description}</p>
+              <p className="text-gray-400 capitalize">{currentProject.description}</p>
             </div>
 
             {userRole === "admin" && (
@@ -547,21 +411,19 @@ export default function ProjectsPage() {
                   {/* Vertical line connecting stages */}
                   {index < currentProject.stages.length - 1 && (
                     <div
-                      className={`absolute left-6 top-10 w-0.5 h-[calc(100%-24px)] ${
-                        stage.status === "completed" ? "bg-[#c4ff00]" : "bg-gray-800"
-                      }`}
+                      className={`absolute left-6 top-10 w-0.5 h-[calc(100%-24px)] ${stage.status === "completed" ? "bg-[#c4ff00]" : "bg-gray-800"
+                        }`}
                     ></div>
                   )}
 
                   <div className="flex gap-4">
                     <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        stage.status === "completed"
-                          ? "bg-[#c4ff00] text-black"
-                          : stage.status === "in-progress"
-                            ? "bg-blue-500/20 text-blue-400"
-                            : "bg-[#1e1e1e] text-gray-400"
-                      }`}
+                      className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${stage.status === "completed"
+                        ? "bg-[#c4ff00] text-black"
+                        : stage.status === "in-progress"
+                          ? "bg-blue-500/20 text-blue-400"
+                          : "bg-[#1e1e1e] text-gray-400"
+                        }`}
                     >
                       {stage.status === "completed" ? (
                         <CheckCircle className="w-6 h-6" />
@@ -574,13 +436,13 @@ export default function ProjectsPage() {
 
                     <div className="flex-1">
                       <div className="flex justify-between items-center mb-2">
-                        <h5 className="font-medium">{stage.name}</h5>
+                        <h5 className="font-medium capitalize">{stage.name}</h5>
                         <span className={`text-xs px-2 py-1 rounded-full capitalize ${getStatusColor(stage.status)}`}>
                           {stage.status.replace("-", " ")}
                         </span>
                       </div>
 
-                      {stage.notes && <p className="text-sm text-gray-400 mb-3">{stage.notes}</p>}
+                      {stage.notes && <p className="text-sm text-gray-400 capitalize mb-3">{stage.notes}</p>}
 
                       {stage.completedAt && (
                         <div className="flex items-center text-xs text-gray-400 mb-3">
@@ -592,29 +454,33 @@ export default function ProjectsPage() {
                       {stage.deliverables && stage.deliverables.length > 0 && (
                         <div className="bg-[#1e1e1e] rounded-lg p-3 space-y-2">
                           <p className="text-xs text-gray-400">Deliverables:</p>
-                          {stage.deliverables.map((deliverable, dIndex) => (
-                            <a
-                              key={dIndex}
-                              href={deliverable.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 text-sm text-[#c4ff00] hover:text-[#d8ff4d] transition-colors"
-                            >
-                              {getDeliverableIcon(deliverable.type)}
-                              <span>{deliverable.name}</span>
-                              <ExternalLink className="w-3 h-3 ml-auto" />
-                            </a>
-                          ))}
+                          {stage.deliverables.map((deliverable, dIndex) => {
+                            // Ensure the link is absolute by adding "https://" if missing
+                            const validLink = deliverable.link.startsWith("http") ? deliverable.link : `https://${deliverable.link}`;
+
+                            return (
+                              <a
+                                key={dIndex}
+                                href={validLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 text-sm text-[#c4ff00] hover:text-[#d8ff4d] transition-colors"
+                              >
+                                {getDeliverableIcon(deliverable.type)}
+                                <span>{deliverable.name}</span>
+                                <ExternalLink className="w-3 h-3 ml-auto" />
+                              </a>
+                            );
+                          })}
                         </div>
                       )}
+
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-
-          
         </div>
       )}
     </motion.div>
