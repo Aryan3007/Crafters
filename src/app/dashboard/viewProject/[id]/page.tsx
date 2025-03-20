@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ExternalLink } from "lucide-react"
+import { ArrowLeft, ExternalLink } from "lucide-react"
 
 interface ProjectPageProps {
   params: {
@@ -48,8 +48,14 @@ console.log(project);
   }
 
   return (
-    <div className="container mx-auto text-white py-12 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="container mx-auto text-white pb-12 px-4">
+      <Link href={"/dashboard/projects"}>
+      <div className="flex justify-start gap-2 text-sm items-center">
+        <ArrowLeft className="text-xs"/>
+      <p>Back to Projects</p>
+      </div>
+      </Link>
+      <div className="max-w-7xl pt-12 mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold capitalize mb-4">{project.name}</h1>
           <p className="text-xl text-gray-400 mb-6">{project.description}</p>
@@ -157,11 +163,7 @@ console.log(project);
           </div>
         </div>
 
-        <div className="text-center">
-          <Link href="/contact">
-            <Button className="text-black" size="lg">Contact Us About This Project</Button>
-          </Link>
-        </div>
+      
       </div>
     </div>
   )

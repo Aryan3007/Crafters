@@ -22,7 +22,7 @@ type ProjectStatus = "planning" | "design" | "development" | "review" | "complet
 // Define project stage interface
 interface ProjectStage {
   name: string
-  status: "completed" | "in-progress" | "pending"
+  status: "Completed" | "In Progresss" | "Hold"
   deliverables?: {
     name: string
     link: string
@@ -161,14 +161,14 @@ export default function ProfilePage() {
                 {projects.length}
               </div>
             </div>
-            <p className="text-2xl font-semibold">Active Projects</p>
+            <p className="text-2xl font-semibold">Total Projects</p>
           </div>
 
           <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-4">
             <div className="flex justify-between items-start mb-2">
               <h3 className="text-gray-400">In Progress</h3>
               <div className="bg-[#00c4ff]/10 text-[#00c4ff] text-xl font-semibold w-12 h-12 rounded-lg flex items-center justify-center">
-                {projects.filter((p) => p.status === "development" || p.status === "design").length}
+                {projects.filter((p) => p.status === "In Progress").length}
               </div>
             </div>
             <p className="text-2xl font-semibold">Current Work</p>
@@ -178,7 +178,7 @@ export default function ProfilePage() {
             <div className="flex justify-between items-start mb-2">
               <h3 className="text-gray-400">Completed</h3>
               <div className="bg-[#ff00c4]/10 text-[#ff00c4] text-xl font-semibold w-12 h-12 rounded-lg flex items-center justify-center">
-                {projects.filter((p) => p.status === "completed").length}
+                {projects.filter((p) => p.status === "Completed").length}
               </div>
             </div>
             <p className="text-2xl font-semibold">Finished Projects</p>

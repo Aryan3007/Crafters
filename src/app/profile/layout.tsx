@@ -199,7 +199,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             <div className="mt-4 flex gap-2">
               <button
                 onClick={handleSignOut}
-                className="bg-[#1e1e1e] flex justify-center items-center gap-2 hover:bg-[#252525] rounded-lg p-2 text-red-500 hover:text-red-700 transition-colors"
+                className="bg-[#1e1e1e] flex justify-center items-center gap-2 hover:bg-[#252525] rounded-lg p-2 text-red-500 transition-colors"
               >
                 <LogOut className="w-5 h-5" />
                 Sign Out

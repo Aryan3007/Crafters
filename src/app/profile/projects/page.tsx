@@ -21,6 +21,8 @@ import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 // Define project status types
 type ProjectStatus = "planning" | "design" | "development" | "review" | "completed" | "Not Started" | "In Progress"
 
@@ -261,29 +263,6 @@ export default function ProjectsPage() {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
       <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6 mb-6">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-medium">Your Projects</h3>
-
-          {userRole === "admin" && (
-            <button className="bg-[#c4ff00] hover:bg-[#d8ff4d] text-black font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              New Project
-            </button>
-          )}
-        </div>
 
         <div className="relative">
           {/* Swiper Carousel */}
@@ -479,6 +458,11 @@ export default function ProjectsPage() {
                   </div>
                 </div>
               ))}
+               <div className="text-center">
+                    <Link href="/contact">
+                      <Button className="text-black" size="lg">Contact Us About This Project</Button>
+                    </Link>
+                  </div>
             </div>
           </div>
         </div>

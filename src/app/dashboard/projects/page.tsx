@@ -67,7 +67,7 @@ export default async function ProjectsPage() {
                     <td className="px-4 py-3">{project.due_date}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end">
-                        <Link href={`/projects/${project.id}`} className="text-white px-2 py-1 rounded flex items-center">
+                        <Link href={`/dashboard/viewProject/${project.id}`} className="text-white px-2 py-1 rounded flex items-center">
                           <Eye className="h-4 w-4" />
                         </Link>
                         <Link href={`/dashboard/projects/${project.id}`} className="text-white px-2 py-1 rounded flex items-center">

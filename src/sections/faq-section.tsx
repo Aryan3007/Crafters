@@ -79,7 +79,7 @@ const FAQItem = ({ faq, index, isOpen, toggleAccordion }: FAQItemProps) => {
                         <div className="p-2 bg-[#1e1e1e] rounded-lg">
                             {faq.icon}
                         </div>
-                        <h3 className="text-lg md:text-xl font-medium text-white group-hover:text-[#c4ff00]">
+                        <h3 className=" font-medium text-white group-hover:text-[#c4ff00]">
                             {faq.question}
                         </h3>
                     </div>
