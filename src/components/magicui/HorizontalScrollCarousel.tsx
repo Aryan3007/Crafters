@@ -15,7 +15,7 @@ type ProjectType = {
 
 const projects: ProjectType[] = [
   {
-    url: "/project1.jpg",
+    url: "/project2.png",
     title: "E-Commerce Platform",
     description:
       "A fully responsive e-commerce platform with advanced filtering, cart functionality, and secure payment processing.",
@@ -24,7 +24,7 @@ const projects: ProjectType[] = [
     id: 1,
   },
   {
-    url: "/project2.jpg",
+    url: "/project1.png",
     title: "Finance Dashboard",
     description:
       "Interactive dashboard for financial analytics with real-time data visualization and customizable reports.",
@@ -33,7 +33,7 @@ const projects: ProjectType[] = [
     id: 2,
   },
   {
-    url: "/placeholder.svg?height=800&width=1200",
+    url: "/project3.png",
     title: "Health & Fitness App",
     description:
       "Mobile-first application for tracking workouts, nutrition, and personal health metrics with social features.",
@@ -42,7 +42,7 @@ const projects: ProjectType[] = [
     id: 3,
   },
   {
-    url: "/placeholder.svg?height=800&width=1200",
+    url: "/project4.png",
     title: "Real Estate Platform",
     description:
       "Property listing and management system with virtual tours, appointment scheduling, and agent dashboards.",
@@ -51,7 +51,7 @@ const projects: ProjectType[] = [
     id: 4,
   },
   {
-    url: "/placeholder.svg?height=800&width=1200",
+    url: "/project7.jpg",
     title: "Learning Management System",
     description:
       "Comprehensive LMS with course creation tools, student progress tracking, and interactive learning materials.",
@@ -60,7 +60,7 @@ const projects: ProjectType[] = [
     id: 5,
   },
   {
-    url: "/placeholder.svg?height=800&width=1200",
+    url: "/project5.png",
     title: "AI Content Generator",
     description:
       "Advanced content creation tool using AI to generate marketing copy, blog posts, and social media content.",
@@ -69,7 +69,7 @@ const projects: ProjectType[] = [
     id: 6,
   },
   {
-    url: "/placeholder.svg?height=800&width=1200",
+    url: "/project6.png",
     title: "Crypto Trading Platform",
     description:
       "Secure cryptocurrency exchange with real-time market data, portfolio management, and automated trading features.",
@@ -105,14 +105,14 @@ const ProjectCard = ({ project }: { project: ProjectType }) => {
         </div>
         <h3 className="text-3xl font-bold text-white mb-2">{project.title}</h3>
         <p className="text-gray-300 mb-4 max-w-xl">{project.description}</p>
-        <div className="flex lg:flex-row flex-col gap-3">
+        {/* <div className="flex lg:flex-row flex-col gap-3">
           <button className="bg-[#c4ff00] hover:bg-[#d8ff4d] text-black font-medium px-5 py-2 rounded-lg transition-colors">
             View Project
           </button>
           <button className="bg-[#333] hover:bg-[#444] text-white font-medium px-5 py-2 rounded-lg transition-colors">
             Case Study
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   )

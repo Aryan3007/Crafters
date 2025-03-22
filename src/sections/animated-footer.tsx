@@ -115,11 +115,11 @@ export default function AnimatedFooter() {
   ]
   
   const socialLinks = [
-    { icon: <Instagram className="w-5 h-5" />, href: "https://instagram.com", label: "Instagram" },
-    { icon: <Twitter className="w-5 h-5" />, href: "https://twitter.com", label: "Twitter" },
-    { icon: <Linkedin className="w-5 h-5" />, href: "https://linkedin.com", label: "LinkedIn" },
-    { icon: <Github className="w-5 h-5" />, href: "https://github.com", label: "GitHub" },
-    { icon: <Dribbble className="w-5 h-5" />, href: "https://dribbble.com", label: "Dribbble" }
+    { icon: <Instagram className="w-5 h-5" />, href: "https://www.instagram.com/infrashyom/", label: "Instagram" },
+    { icon: <Twitter className="w-5 h-5" />, href: "https://x.com/InfraShyom", label: "Twitter" },
+    { icon: <Linkedin className="w-5 h-5" />, href: "https://www.linkedin.com/company/infrashyom", label: "LinkedIn" },
+    // { icon: <Github className="w-5 h-5" />, href: "https://github.com", label: "GitHub" },
+    // { icon: <Dribbble className="w-5 h-5" />, href: "https://dribbble.com", label: "Dribbble" }
   ]
   
   return (
@@ -166,19 +166,19 @@ export default function AnimatedFooter() {
                   <div className="w-8 h-8 rounded-full bg-[#1e1e1e] flex items-center justify-center">
                     <Mail className="w-4 h-4 text-[#c4ff00]" />
                   </div>
-                  <span className="text-gray-300">hello@creativestudio.com</span>
+                  <span className="text-gray-300">support@ishyom.com</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#1e1e1e] flex items-center justify-center">
                     <Phone className="w-4 h-4 text-[#c4ff00]" />
                   </div>
-                  <span className="text-gray-300">+1 (555) 123-4567</span>
+                  <span className="text-gray-300">+91 9425146972</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#1e1e1e] flex items-center justify-center">
                     <MapPin className="w-4 h-4 text-[#c4ff00]" />
                   </div>
-                  <span className="text-gray-300">123 Creative St, Design District, SF</span>
+                  <span className="text-gray-300">Indore - Madhya Pradesh, India</span>
                 </div>
               </div>
             </div>
@@ -306,7 +306,7 @@ export default function AnimatedFooter() {
         >
           <div className="flex flex-col md:flex-row justify-between items-center">
             <motion.p variants={itemVariants} className="text-gray-500 text-sm mb-4 md:mb-0">
-              © {new Date().getFullYear()} Creative Studio. All rights reserved.
+              © {new Date().getFullYear()} Infra Shyom. All rights reserved.
             </motion.p>
             
             <motion.div variants={itemVariants} className="flex items-center gap-6">

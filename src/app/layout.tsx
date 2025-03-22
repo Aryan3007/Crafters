@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "The Crafters | Elevate Your Digital Vision",
+  title: "iShyom | Elevate Your Digital Vision",
   description: "Creative services for your business",
 };
 

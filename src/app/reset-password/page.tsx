@@ -85,7 +85,7 @@ export default function ResetPasswordPage() {
                 <path d="M2 12l10 5 10-5"></path>
               </svg>
             </div>
-            <span className="text-xl font-bold text-white">Creative Studio</span>
+            <span className="text-xl font-bold text-white">Infra Shyom</span>
           </Link>
 
           <h1 className="text-3xl font-bold text-white mb-2">Reset Password</h1>

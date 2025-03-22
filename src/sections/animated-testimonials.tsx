@@ -1,167 +1,162 @@
 "use client"
 
-import { motion, AnimatePresence } from "framer-motion"
-import { ArrowLeft, ArrowRight } from "lucide-react"
-import Image from "next/image"
-import { useEffect, useState } from "react"
-import { useCallback } from "react"
+import { useState, useEffect } from "react"
+import { ChevronLeft, ChevronRight, Quote } from 'lucide-react'
+import { cn } from "@/lib/utils"
 
-
-type Testimonial = {
+interface Testimonial {
+  id: number
   quote: string
-  name: string
-  designation: string
-  src: string
+  author: string
+  role: string
 }
-export const AnimatedTestimonials = ({
-  testimonials,
-  autoplay = false,
-}: {
-  testimonials: Testimonial[]
-  autoplay?: boolean
-}) => {
-  const [active, setActive] = useState(0)
 
+export default function TestimonialSection() {
+  const testimonials: Testimonial[] = [
+    {
+      id: 1,
+      quote: "Incredible service! The website they designed for my business is modern, fast, and user-friendly. It has truly helped us attract more customers online.",
+      author: "Rahul Sharma",
+      role: "Founder at Digital Solutions"
+    },
+    {
+      id: 2,
+      quote: "The mobile app they developed for us is seamless and performs exceptionally well. Their team understood our requirements perfectly and delivered beyond our expectations.",
+      author: "Priya Mehta",
+      role: "CEO at FitWell"
+    },
+    {
+      id: 3,
+      quote: "Their graphic design work is simply outstanding! From our logo to social media creatives, everything was designed with perfection and creativity.",
+      author: "Amit Verma",
+      role: "Marketing Head at Creative Minds"
+    },
+    {
+      id: 4,
+      quote: "The video editing team did an amazing job! They turned our raw footage into a high-quality promotional video that helped boost our brand engagement.",
+      author: "Neha Kapoor",
+      role: "Content Strategist at Visionary Media"
+    },
+    {
+      id: 5,
+      quote: "I wanted a complete branding package, and they delivered it flawlessly! The website, app, and graphics all aligned perfectly with our brand vision.",
+      author: "Ananya Iyer",
+      role: "Co-Founder at Trendy Creations"
+    }
+  ];
+  
 
-  const handleNext = useCallback(() => {
-    setActive((prev) => (prev + 1) % testimonials.length)
-  }, [testimonials.length])
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+  const [direction, setDirection] = useState<'left' | 'right'>('right')
 
-  const handlePrev = useCallback(() => {
-    setActive((prev) => (prev - 1 + testimonials.length) % testimonials.length)
-  }, [testimonials.length])
-
-  const isActive = (index: number) => {
-    return index === active
+  const goToNext = () => {
+    if (isAnimating) return
+    setDirection('right')
+    setIsAnimating(true)
+    setTimeout(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length)
+      setIsAnimating(false)
+    }, 500)
   }
 
-  const fixedRotateY = (index: number) => {
-    const rotations = [-10, -5, 0, 5, 10]
-    return rotations[index % rotations.length]
-  }
-
-  const randomRotateY = () => {
-    return Math.floor(Math.random() * 21) - 10
+  const goToPrevious = () => {
+    if (isAnimating) return
+    setDirection('left')
+    setIsAnimating(true)
+    setTimeout(() => {
+      setCurrentIndex((prevIndex) => (prevIndex - 1 + testimonials.length) % testimonials.length)
+      setIsAnimating(false)
+    }, 500)
   }
 
   useEffect(() => {
-    if (autoplay) {
-      const interval = setInterval(handleNext, 5000)
-      return () => clearInterval(interval)
-    }
-  }, [autoplay, handleNext])
+    const interval = setInterval(() => {
+      goToNext()
+    }, 8000)
+    return () => clearInterval(interval)
+  }, [currentIndex, isAnimating])
+
   return (
-    <div className="max-w-sm md:max-w-6xl mx-auto antialiased font-sans px-4 md:px-8 lg:px-12 py-20">
-      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-20">
-        <div>
-          <div className="relative h-80 w-full">
-            <AnimatePresence>
-              {testimonials.map((testimonial, index) => (
-                <motion.div
-                  key={testimonial.src}
-                  initial={{
-                    rotate: fixedRotateY(index),
-                    scale: 0.9,
-                    z: -100,
-                  }}
-                  animate={{
-                    opacity: isActive(index) ? 1 : 0.7,
-                    scale: isActive(index) ? 1 : 0.95,
-                    z: isActive(index) ? 0 : -100,
-                    rotate: isActive(index) ? 0 : randomRotateY(),
-                    zIndex: isActive(index) ? 999 : testimonials.length + 2 - index,
-                    y: isActive(index) ? [0, -80, 0] : 0,
-                  }}
-                  exit={{
-                    opacity: 0,
-                    scale: 0.9,
-                    z: 100,
-                    rotate: randomRotateY(),
-                  }}
-                  transition={{
-                    duration: 0.4,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute inset-0 origin-bottom"
-                >
-                  <Image
-                    src={testimonial.src}
-                    alt={testimonial.name}
-                    width={500}
-                    height={500}
-                    draggable={false}
-                    className="h-full w-full rounded-3xl object-cover object-center"
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+    <section className="w-full py-16 md:py-24 bg-black text-white overflow-hidden">
+      <div className="container px-4 md:px-6 mx-auto">
+        <div className="flex flex-col items-center text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+            What Our <span className="text-[#c4ff00]">Clients</span> Say
+          </h2>
+          <div className="w-20 h-1 bg-[#c4ff00] mb-8"></div>
+          <p className="text-gray-400 max-w-2xl">
+            Don't just take our word for it. Here's what our clients have to say about their experience working with us.
+          </p>
         </div>
-        <div className="flex justify-between flex-col py-4">
-          <motion.div
-            key={active}
-            initial={{
-              y: 20,
-              opacity: 0,
-            }}
-            animate={{
-              y: 0,
-              opacity: 1,
-            }}
-            exit={{
-              y: -20,
-              opacity: 0,
-            }}
-            transition={{
-              duration: 0.2,
-              ease: "easeInOut",
-            }}
-          >
-            <h3 className="text-2xl font-bold dark:text-white text-[#c4ff00]">{testimonials[active].name}</h3>
-            <p className="text-sm text-gray-500 dark:text-neutral-500">{testimonials[active].designation}</p>
-            <motion.p className="text-lg text-gray-500 mt-8 dark:text-neutral-300">
-              {testimonials[active].quote.split(" ").map((word, index) => (
-                <motion.span
-                  key={index}
-                  initial={{
-                    filter: "blur(10px)",
-                    opacity: 0,
-                    y: 5,
-                  }}
-                  animate={{
-                    filter: "blur(0px)",
-                    opacity: 1,
-                    y: 0,
-                  }}
-                  transition={{
-                    duration: 0.2,
-                    ease: "easeInOut",
-                    delay: 0.02 * index,
-                  }}
-                  className="inline-block"
-                >
-                  {word}&nbsp;
-                </motion.span>
-              ))}
-            </motion.p>
-          </motion.div>
-          <div className="flex gap-4 pt-4 md:pt-0">
+
+        <div className="relative max-w-4xl mx-auto">
+          <div className="absolute -top-10 left-0 opacity-10">
+            <Quote size={120} className="text-[#c4ff00]" />
+          </div>
+          
+          <div className="relative h-[300px] md:h-[250px] overflow-hidden">
+            {testimonials.map((testimonial, index) => (
+              <div
+                key={testimonial.id}
+                className={cn(
+                  "absolute w-full transition-all duration-500 ease-in-out px-6 md:px-10",
+                  index === currentIndex ? "opacity-100 translate-x-0" : "opacity-0",
+                  index !== currentIndex && direction === 'right' ? "translate-x-full" : "",
+                  index !== currentIndex && direction === 'left' ? "-translate-x-full" : ""
+                )}
+              >
+                <blockquote className="text-xl md:text-2xl font-medium mb-6 italic">
+                  "{testimonial.quote}"
+                </blockquote>
+                <div className="flex flex-col items-center">
+                  <p className="font-bold text-[#c4ff00]">{testimonial.author}</p>
+                  <p className="text-gray-400 text-sm">{testimonial.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-center gap-4 mt-8">
             <button
-              onClick={handlePrev}
-              className="h-7 w-7 rounded-full bg-[#c4ff00] flex items-center justify-center group/button"
+              onClick={goToPrevious}
+              className="p-2 rounded-full border border-gray-700 hover:border-[#c4ff00] hover:bg-black/30 transition-colors"
+              aria-label="Previous testimonial"
             >
-              <ArrowLeft className="h-5 w-5 text-black  group-hover/button:rotate-12 transition-transform duration-300" />
+              <ChevronLeft className="h-6 w-6 text-[#c4ff00]" />
             </button>
+            <div className="flex gap-2 items-center">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    if (index > currentIndex) {
+                      setDirection('right')
+                    } else if (index < currentIndex) {
+                      setDirection('left')
+                    }
+                    setCurrentIndex(index)
+                  }}
+                  className={cn(
+                    "w-3 h-3 rounded-full transition-all duration-300",
+                    index === currentIndex 
+                      ? "bg-[#c4ff00] w-10" 
+                      : "bg-gray-700 hover:bg-gray-500"
+                  )}
+                  aria-label={`Go to testimonial ${index + 1}`}
+                />
+              ))}
+            </div>
             <button
-              onClick={handleNext}
-              className="h-7 w-7 rounded-full bg-[#c4ff00] flex items-center justify-center group/button"
+              onClick={goToNext}
+              className="p-2 rounded-full border border-gray-700 hover:border-[#c4ff00] hover:bg-black/30 transition-colors"
+              aria-label="Next testimonial"
             >
-              <ArrowRight className="h-5 w-5 text-black  group-hover/button:-rotate-12 transition-transform duration-300" />
+              <ChevronRight className="h-6 w-6 text-[#c4ff00]" />
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
-

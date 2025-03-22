@@ -115,25 +115,11 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                 <Menu className="w-6 h-6" />
               </button>
 
-              <Link href="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                    <path d="M2 17l10 5 10-5"></path>
-                    <path d="M2 12l10 5 10-5"></path>
-                  </svg>
+              <Link href="/" className="flex items-center gap-2 z-50">
+                <div className="w-10 h-10 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
+                  <Image src={"/logo.png"} alt="Logo" width={30} height={30} className={"w-10 h-10"}></Image>
                 </div>
-                <span className="text-xl font-bold text-white">Creative Studio</span>
+                <span className="text-white font-semibold font-sans text-xl">iShyom</span>
               </Link>
             </div>
 
@@ -176,9 +162,8 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
         {/* Sidebar */}
         <div
-          className={`w-64 bg-[#0a0a0a] border-r border-gray-800 p-4 flex flex-col fixed left-0 top-[73px] bottom-0 overflow-y-auto z-30 transition-transform duration-300 ease-in-out md:translate-x-0 ${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={`w-64 bg-[#0a0a0a] border-r border-gray-800 p-4 flex flex-col fixed left-0 top-0 lg:top-[73px] bottom-0 overflow-y-auto z-30 transition-transform duration-300 ease-in-out md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
         >
           {/* Close button for mobile */}
           <button
@@ -210,11 +195,10 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
           <div className="space-y-1">
             <Link
               href="/profile"
-              className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${
-                pathname === "/profile"
+              className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${pathname === "/profile"
                   ? "bg-[#c4ff00] text-black font-medium"
                   : "text-gray-400 hover:bg-[#1e1e1e] hover:text-white"
-              }`}
+                }`}
             >
               <User className="w-5 h-5" />
               <span>Overview</span>
@@ -222,11 +206,10 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
             <Link
               href="/profile/projects"
-              className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${
-                pathname === "/profile/projects"
+              className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${pathname === "/profile/projects"
                   ? "bg-[#c4ff00] text-black font-medium"
                   : "text-gray-400 hover:bg-[#1e1e1e] hover:text-white"
-              }`}
+                }`}
             >
               <FileText className="w-5 h-5" />
               <span>Projects</span>
@@ -234,11 +217,10 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
             <Link
               href="/profile/settings"
-              className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${
-                pathname === "/profile/settings"
+              className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${pathname === "/profile/settings"
                   ? "bg-[#c4ff00] text-black font-medium"
                   : "text-gray-400 hover:bg-[#1e1e1e] hover:text-white"
-              }`}
+                }`}
             >
               <Shield className="w-5 h-5" />
               <span>Settings</span>

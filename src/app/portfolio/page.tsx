@@ -117,15 +117,15 @@ export default function PortfolioPage() {
                 className="object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 z-20 p-6 flex flex-col justify-end">
-                <div className="transform translate-y-8 group-hover:translate-y-0 transition-transform duration-300">
+                <div className="transform lg:translate-y-8 group-hover:translate-y-0 transition-transform duration-300">
                   <div className="bg-[#c4ff00] text-black text-xs font-medium px-2 py-1 rounded inline-block mb-3">
                     {categories.find((c) => c.id === project.category)?.label}
                   </div>
                   <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-                  <p className="text-gray-300 text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <p className="text-gray-300 text-sm mb-4 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     {project.description}
                   </p>
-                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="flex gap-2 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <Link
                       href={`/portfolio/${project.id}`}
                       className="bg-white/10 hover:bg-white/20 text-white text-sm px-3 py-1 rounded-full backdrop-blur-sm transition-colors"

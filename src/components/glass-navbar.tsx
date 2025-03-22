@@ -7,6 +7,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 export function GlassNavbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -98,23 +99,9 @@ export function GlassNavbar() {
           {/* Logo */}
           <Link href="#" className="flex items-center gap-2 z-50">
             <div className="w-10 h-10 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                <path d="M2 17l10 5 10-5"></path>
-                <path d="M2 12l10 5 10-5"></path>
-              </svg>
+             <Image src={"/logo.png"} alt="Logo" width={30} height={30} className={"w-10 h-10"}></Image>
             </div>
-            <span className="text-white font-bold text-xl">Creative Studio</span>
+            <span className="text-white font-semibold font-sans text-xl">iShyom</span>
           </Link>
 
           {/* Desktop Navigation */}

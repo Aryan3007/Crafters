@@ -95,26 +95,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <header className="bg-[#0a0a0a] border-b border-gray-800 fixed top-0 left-0 right-0 z-10">
         <div className=" px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                  <path d="M2 17l10 5 10-5"></path>
-                  <path d="M2 12l10 5 10-5"></path>
-                </svg>
-              </div>
-              <span className="text-xl font-bold text-white">Creative Studio</span>
-            </Link>
+           <Link href="/" className="flex items-center gap-2 z-50">
+                <div className="w-10 h-10 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
+                  <Image src={"/logo.png"} alt="Logo" width={30} height={30} className={"w-10 h-10"}></Image>
+                </div>
+                <span className="text-white font-semibold font-sans text-xl">iShyom</span>
+              </Link>
 
             <div className="flex items-center gap-6">
              
@@ -148,7 +134,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Rest of the component remains the same */}
       <div className="flex pt-[73px] min-h-[calc(100vh-73px)]">
         {/* Sidebar */}
-        <div className="w-64 bg-[#0a0a0a] border-r border-gray-800 p-4 flex flex-col fixed left-0 top-[73px] bottom-0 overflow-y-auto">
+        <div className="w-64 bg-[#0a0a0a] border-r border-gray-800 p-4 flex flex-col fixed left-0 top-0 lg:top-[73px] bottom-0 overflow-y-auto">
           <div className="space-y-2 flex-1">
             <Link
               href="/dashboard"

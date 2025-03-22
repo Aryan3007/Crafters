@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 const services = [
   {
@@ -270,13 +271,15 @@ const ServiceDetail = ({ service, cardPosition, onClose }: { service: Service; c
               ))}
             </div>
 
+<Link href={"/signup"}>
             <button
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-300"
               style={{ backgroundColor: service.color, color: "#000" }}
-            >
+              >
               <span>Get Started</span>
               <ArrowRight className="w-4 h-4" />
             </button>
+              </Link>
           </div>
 
           <div className="relative rounded-xl overflow-hidden h-[300px] md:h-auto">

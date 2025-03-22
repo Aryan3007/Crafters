@@ -239,7 +239,7 @@ export default function ProjectDetailPage() {
               Ready to start your next project? Contact us today to discuss how we can help bring your vision to life.
             </p>
             <Link
-              href="/contact"
+              href="/user-contact-page"
               className="bg-[#c4ff00] hover:bg-[#d8ff4d] text-black font-medium px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105"
             >
               Start a Project

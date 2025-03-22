@@ -4,7 +4,8 @@ import Example from "@/components/magicui/HorizontalScrollCarousel";
 import { VelocityScroll } from "@/components/magicui/scroll-based-velocity";
 import { TextReveal } from "@/components/magicui/text-reveal";
 import AnimatedFooter from "@/sections/animated-footer";
-import { AnimatedTestimonials } from "@/sections/animated-testimonials";
+import TestimonialSection, { AnimatedTestimonials } from "@/sections/animated-testimonials";
+import CTASection from "@/sections/cta-section";
 import FAQSection from "@/sections/faq-section";
 import HeroGeometric from "@/sections/hero-geometric";
 import ServicesSection from "@/sections/services-section";
@@ -54,18 +55,18 @@ export default function Home() {
       <GlassNavbar />
       <HeroGeometric />
       <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
-        <VelocityScroll>The Crafters <span className="text-[#c4ff00]">The Crafters</span></VelocityScroll>
+        <VelocityScroll>Infra Shyom <span className="text-[#c4ff00]">Infra Shyom  </span></VelocityScroll>
         <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-black"></div>
         <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-black"></div>
       </div>
       <TextReveal>We know what’s going on. You need top-notch Website or App to stand out in the tech world, but hiring in-house developers can be costly and time-consuming.
-        That’s when CRAFTERS comes in.</TextReveal>
+        That’s when Infra Shyom comes in.</TextReveal>
       <ServicesSection />
       <Services />
       <Example />
-      <AnimatedTestimonials testimonials={testimonials} />
+      <TestimonialSection />
       <FAQSection />
-
+      <CTASection />
       <AnimatedFooter />
     </>
   );

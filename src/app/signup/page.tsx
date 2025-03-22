@@ -8,6 +8,7 @@ import Link from "next/link"
 import { Eye, EyeOff, AlertCircle, Users, Shield, Zap } from "lucide-react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 const features = [
   {
@@ -154,28 +155,14 @@ export default function SignupPage() {
       {/* Left side */}
       <div className="w-0 lg:w-[55%] bg-[#0a0a0a] p-8 lg:p-12 hidden lg:flex flex-col">
         <div>
-          <Link href="/" className="flex items-center gap-2 mb-16">
-            <div className="w-8 h-8 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                <path d="M2 17l10 5 10-5"></path>
-                <path d="M2 12l10 5 10-5"></path>
-              </svg>
+        <Link href="/" className="flex items-center gap-2 pb-12 z-50">
+            <div className="w-10 h-10 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
+             <Image src={"/logo.png"} alt="Logo" width={30} height={30} className={"w-10 h-10"}></Image>
             </div>
-            <span className="text-xl font-bold text-white">Creative Studio</span>
+            <span className="text-white font-semibold font-sans text-xl">iShyom</span>
           </Link>
 
-          <h1 className="text-4xl font-bold text-white mb-3">Start creating with Creative Studio</h1>
+          <h1 className="text-4xl font-bold text-white mb-3">Start creating with <span className="text-[#c4ff00]">Infra Shyom</span></h1>
           <p className="text-gray-400 text-sm mb-12">No credit card required</p>
 
           <div className="space-y-8">
@@ -215,27 +202,12 @@ export default function SignupPage() {
       {/* Right side */}
       <div className="flex-1 flex max-w-xl mx-auto flex-col p-8 lg:p-12">
         <div className="lg:hidden flex justify-between items-center mb-8">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                <path d="M2 17l10 5 10-5"></path>
-                <path d="M2 12l10 5 10-5"></path>
-              </svg>
+        <Link href="/" className="flex items-center gap-2 z-50">
+            <div className="w-10 h-10 rounded-full bg-[#c4ff00] flex items-center justify-center text-black">
+             <Image src={"/logo.png"} alt="Logo" width={30} height={30} className={"w-10 h-10"}></Image>
             </div>
-            <span className="text-xl font-bold text-white">Creative Studio</span>
+            <span className="text-white font-semibold font-sans text-xl">iShyom</span>
           </Link>
-
           <Link href="/" className="text-gray-400 hover:text-white transition-colors">
             Back to Home
           </Link>

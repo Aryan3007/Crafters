@@ -389,7 +389,7 @@ export default function AboutPage() {
               Let&apos;s collaborate to bring your vision to life with our creative expertise and technical skills.
             </p>
             <Link
-              href="/contact"
+              href="/user-contact-page"
               className="bg-[#c4ff00] hover:bg-[#d8ff4d] text-black font-medium px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105"
             >
               Get in Touch

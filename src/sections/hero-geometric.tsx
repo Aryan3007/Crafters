@@ -79,7 +79,7 @@ function ElegantShape({
 }
 
 export default function HeroGeometric({
-  badge = "The Crafters",
+  badge = "Infra Shyom",
   title1 = "Elevate Your",
   title2 = "Digital Vision",
 }: {
@@ -160,7 +160,7 @@ export default function HeroGeometric({
             animate="visible"
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8 md:mb-12"
           >
-            <Image src="https://kokonutui.com/logo.svg" alt="Kokonut UI" width={20} height={20} />
+            <Image src="/logo.png" alt="Kokonut UI" width={20} height={20} />
             <span className="text-sm text-white/60 tracking-wide">{badge}</span>
           </motion.div>
 
