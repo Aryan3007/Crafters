@@ -19,31 +19,39 @@ type TeamMember = {
 const teamMembers: TeamMember[] = [
   {
     id: 1,
-    name: "Alex Morgan",
-    role: "Founder & Creative Director",
-    image: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=2070",
+    name: "Uday Shamra",
+    role: "Founder & CEO",
+    image: "/uday.png",
     bio: "With over 15 years of experience in design and development, Alex leads our creative vision and ensures that every project meets our high standards of excellence. Alex's passion for innovative design and user-centered solutions drives our team forward.",
   },
   {
-    id: 2,
-    name: "Jamie Chen",
-    role: "Lead Developer",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1998",
-    bio: "Jamie is a full-stack developer with expertise in the latest web and mobile technologies. With a background in computer science and a keen eye for detail, Jamie ensures that our technical implementations are robust, scalable, and cutting-edge.",
+  
+    id: 5,
+    name: "Divyanh Sharma",
+    role: "Creative Director",
+    image: "/deep.png",
+    bio: "Jordan ensures that our projects run smoothly from inception to delivery. With a background in both design and business, Jordan bridges the gap between creative vision and practical execution, keeping our projects on time and within budget.",
   },
   {
     id: 3,
-    name: "Taylor Williams",
-    role: "UI/UX Designer",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974",
+    name: "Aryan Tyagi",
+    role: "Lead Developer & Designer",
+    image: "/aryan.png",
     bio: "Taylor brings a unique perspective to user experience design, combining aesthetic sensibility with a deep understanding of user behavior. Their designs are not just beautiful but also intuitive and accessible to all users.",
   },
-  {
-    id: 4,
-    name: "Jordan Smith",
-    role: "Project Manager",
-    image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=1974",
-    bio: "Jordan ensures that our projects run smoothly from inception to delivery. With a background in both design and business, Jordan bridges the gap between creative vision and practical execution, keeping our projects on time and within budget.",
+  // {
+  //   id: 4,
+  //   name: "Devansh Sharma",
+  //   role: "Project Manager",
+  //   image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=1974",
+  //   bio: "Jordan ensures that our projects run smoothly from inception to delivery. With a background in both design and business, Jordan bridges the gap between creative vision and practical execution, keeping our projects on time and within budget.",
+  // },
+    {
+      id: 2,
+      name: "Dhruv Gupta",
+      role: "Lead Developer",
+      image: "/dhruv.png",
+      bio: "Jamie is a full-stack developer with expertise in the latest web and mobile technologies. With a background in computer science and a keen eye for detail, Jamie ensures that our technical implementations are robust, scalable, and cutting-edge.",
   },
 ]
 
@@ -349,7 +357,7 @@ export default function AboutPage() {
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-1">{member.name}</h3>
                 <p className="text-[#c4ff00] mb-4">{member.role}</p>
-                <p className="text-gray-400 text-sm">{member.bio}</p>
+                {/* <p className="text-gray-400 text-sm">{member.bio}</p> */}
               </div>
             </motion.div>
           ))}
