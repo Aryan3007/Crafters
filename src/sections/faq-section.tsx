@@ -234,7 +234,7 @@ export default function FAQSection() {
                 transition={{ duration: 0.5, delay: 0.8 }}
                 className="mt-16 text-center"
             >
-                <div className="inline-block relative">
+                {/* <div className="inline-block relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-[#c4ff00]/20 via-[#c4ff00]/10 to-[#c4ff00]/20 blur-xl rounded-full -z-10"></div>
                     <a
                         href="/contact"
@@ -258,7 +258,7 @@ export default function FAQSection() {
                             <path d="m12 5 7 7-7 7"></path>
                         </svg>
                     </a>
-                </div>
+                </div> */}
             </motion.div>
         </div>
     )

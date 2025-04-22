@@ -89,7 +89,7 @@ export type Project = {
       description:
         "An engaging mobile game designed to teach programming concepts to children through interactive puzzles.",
       category: "app",
-      image: "https://images.unsplash.com/photo-1626240130051-68871c71e8a5?q=80&w=2080",
+      image: "https://images.unsplash.com/photo-1568836197509-fcd9f39ef78f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzF8fEVkdWNhdGlvbmFsJTIwTW9iaWxlJTIwR2FtZXxlbnwwfHwwfHx8MA%3D%3D",
       technologies: ["Unity", "C#", "iOS", "Android"],
       featured: true,
       year: 2023,
@@ -147,7 +147,7 @@ export type Project = {
       description:
         "A series of distinctive event posters designed to capture attention and convey the essence of each event.",
       category: "graphic",
-      image: "https://images.unsplash.com/photo-1508900436185-54e5c3f02e77?q=80&w=2080",
+      image: "https://images.unsplash.com/photo-1558707538-c56435bdcdf3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       technologies: ["Adobe Photoshop", "Adobe Illustrator", "Typography"],
       featured: false,
       year: 2022,

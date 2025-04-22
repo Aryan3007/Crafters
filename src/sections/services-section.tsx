@@ -25,7 +25,7 @@ const services = [
     icon: <Code className="w-6 h-6" />,
     description: "Custom websites and web applications built with modern technologies and frameworks.",
     skills: ["React", "Next.js", "Node.js", "TypeScript", "Tailwind CSS"],
-    image: "/placeholder.svg?height=400&width=600",
+    image: "https://images.unsplash.com/photo-1545670723-196ed0954986?q=80&w=2073&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     color: "#c4ff00",
   },
   {
@@ -34,7 +34,7 @@ const services = [
     icon: <Smartphone className="w-6 h-6" />,
     description: "Native and cross-platform mobile applications for iOS and Android devices.",
     skills: ["React Native", "Flutter", "Swift", "Kotlin", "Firebase"],
-    image: "/placeholder.svg?height=400&width=600",
+    image: "https://images.unsplash.com/photo-1649443992089-8bf1fc3c42f4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     color: "#00e5ff",
   },
   {
@@ -43,7 +43,7 @@ const services = [
     icon: <Palette className="w-6 h-6" />,
     description: "User-centered design solutions that enhance user experience and drive engagement.",
     skills: ["Figma", "Adobe XD", "Prototyping", "User Research", "Wireframing"],
-    image: "/placeholder.svg?height=400&width=600",
+    image: "https://images.pexels.com/photos/326518/pexels-photo-326518.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
     color: "#ff3d71",
   },
   {
@@ -52,7 +52,7 @@ const services = [
     icon: <Film className="w-6 h-6" />,
     description: "Professional video editing and motion graphics for various digital platforms.",
     skills: ["Adobe Premiere", "After Effects", "DaVinci Resolve", "Motion Graphics", "Color Grading"],
-    image: "/placeholder.svg?height=400&width=600",
+    image: "https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
     color: "#ffaa00",
   },
   {
@@ -61,7 +61,7 @@ const services = [
     icon: <Megaphone className="w-6 h-6" />,
     description: "Strategic digital marketing solutions to grow your online presence and reach.",
     skills: ["SEO", "Content Marketing", "Social Media", "Email Campaigns", "Analytics"],
-    image: "/placeholder.svg?height=400&width=600",
+    image: "https://images.pexels.com/photos/265087/pexels-photo-265087.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
     color: "#00d68f",
   },
   {
@@ -70,7 +70,7 @@ const services = [
     icon: <ShoppingCart className="w-6 h-6" />,
     description: "End-to-end e-commerce development with secure payment integration and inventory management.",
     skills: ["Shopify", "WooCommerce", "Payment Gateways", "Inventory Systems", "Customer Portals"],
-    image: "/placeholder.svg?height=400&width=600",
+    image: "https://images.unsplash.com/photo-1664455340023-214c33a9d0bd?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     color: "#c4ff00",
   },
   {
@@ -79,7 +79,7 @@ const services = [
     icon: <Layers className="w-6 h-6" />,
     description: "Comprehensive branding solutions that communicate your unique value proposition.",
     skills: ["Logo Design", "Brand Guidelines", "Visual Identity", "Brand Strategy", "Marketing Collateral"],
-    image: "/placeholder.svg?height=400&width=600",
+    image: "https://images.unsplash.com/photo-1633533451997-8b6079082e3d?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     color: "#ff3d71",
   },
   {
@@ -88,7 +88,7 @@ const services = [
     icon: <Globe className="w-6 h-6" />,
     description: "Multilingual websites and localization services to reach international audiences.",
     skills: ["Localization", "Multilingual Content", "Cultural Adaptation", "Global SEO", "International UX"],
-    image: "/placeholder.svg?height=400&width=600",
+    image: "https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     color: "#00d68f",
   },
 ]
@@ -472,14 +472,14 @@ const ProcessSection = ({ activeProcess }: { activeProcess: number }) => {
             </div>
           </motion.div>
 
-          <motion.button
+          {/* <motion.button
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#1e1e1e] hover:bg-[#252525] border border-gray-800 rounded-lg text-white transition-all duration-300 hover:shadow-[0_0_15px_rgba(196,255,0,0.15)]"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
           >
             <span>Learn More</span>
             <ArrowRight className="w-4 h-4 text-[#c4ff00]" />
-          </motion.button>
+          </motion.button> */}
         </div>
 
         <div className="md:w-2/3 space-y-8">

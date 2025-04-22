@@ -88,7 +88,7 @@ export default function ContactForm({ prefillData }: ContactFormProps) {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-16 md:py-24">
+    <div className="w-full max-w-6xl mx-auto py-16 md:py-24">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -363,7 +363,7 @@ export default function ContactForm({ prefillData }: ContactFormProps) {
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-white mb-2">Call Us</h3>
-          <p className="text-gray-400">+1 (555) 123-4567</p>
+          <p className="text-gray-400">+91 9425146972</p>
         </motion.div>
 
         <motion.div
@@ -390,7 +390,7 @@ export default function ContactForm({ prefillData }: ContactFormProps) {
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-white mb-2">Email Us</h3>
-          <p className="text-gray-400">hello@creativestudio.com</p>
+          <p className="text-gray-400">support@ishyom.com</p>
         </motion.div>
 
         <motion.div
@@ -418,9 +418,7 @@ export default function ContactForm({ prefillData }: ContactFormProps) {
           </div>
           <h3 className="text-lg font-semibold text-white mb-2">Visit Us</h3>
           <p className="text-gray-400">
-            123 Creative St, Design District
-            <br />
-            San Francisco, CA 94103
+          Indore - Madhya Pradesh, India
           </p>
         </motion.div>
       </div>
