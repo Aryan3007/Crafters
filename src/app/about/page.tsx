@@ -39,13 +39,13 @@ const teamMembers: TeamMember[] = [
     image: "/aryan.png",
     bio: "Taylor brings a unique perspective to user experience design, combining aesthetic sensibility with a deep understanding of user behavior. Their designs are not just beautiful but also intuitive and accessible to all users.",
   },
-  // {
-  //   id: 4,
-  //   name: "Devansh Sharma",
-  //   role: "Project Manager",
-  //   image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=1974",
-  //   bio: "Jordan ensures that our projects run smoothly from inception to delivery. With a background in both design and business, Jordan bridges the gap between creative vision and practical execution, keeping our projects on time and within budget.",
-  // },
+  {
+    id: 4,
+    name: "Manish Sharma",
+    role: "Project Manager",
+    image: "/manish.jpg",
+    bio: "Jordan ensures that our projects run smoothly from inception to delivery. With a background in both design and business, Jordan bridges the gap between creative vision and practical execution, keeping our projects on time and within budget.",
+  },
     {
       id: 2,
       name: "Dhruv Gupta",
