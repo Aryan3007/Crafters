@@ -30,7 +30,7 @@ export default function PortfolioPage() {
     <div className="flex flex-col min-h-screen bg-black text-white">
         <GlassNavbar/>
       {/* Hero Section */}
-      <div className="relative w-full h-[40vh] md:h-[50vh] overflow-hidden">
+      <div className="relative w-full h-[40vh] pt-24 md:h-[50vh] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/30 z-10" />
        
         <div className="relative z-20 container mx-auto px-4 h-full flex flex-col justify-center items-center text-center">

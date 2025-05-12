@@ -159,7 +159,7 @@ export default function AboutPage() {
     <div className="flex flex-col min-h-screen bg-black text-white">
         <GlassNavbar/>
 
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl pt-24 mx-auto">
 
   
       {/* Hero Section */}
